@@ -17,7 +17,7 @@ plugins:
 
 # ===== 작성자 프로필 (사이드바) =====
 author:
-  name: "나성호 (Kevin Na)"
+  name: "나성호 (Seongho Na)"
   bio: "데이터 사이언스 강사 · 헬로데이터사이언스"
   links:
     - label: "GitHub"
