@@ -1,4 +1,50 @@
-title: HelloDataScience
-description: Python, Data Analysis, Data Visualization, Statistical Analysis, Machine Learning, Deep Learning, Time Series, Web Scraping, Text Mining
+# ===== 사이트 기본 정보 =====
+title: "Hello Data Science"
+description: "Python·R 데이터 분석, 머신러닝, 딥러닝 강의 노트"
+url: "https://www.hds.ai.kr"
+locale: "ko-KR"
+
+# ===== 테마 (GitHub Pages는 remote_theme 방식) =====
 remote_theme: "mmistakes/minimal-mistakes@master"
-plugins: [jekyll-include-cache, jekyll-feed, jekyll-sitemap, jekyll-paginate]
+minimal_mistakes_skin: "default"
+
+# ===== 플러그인 =====
+plugins:
+  - jekyll-include-cache
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-paginate
+
+# ===== 작성자 프로필 (사이드바) =====
+author:
+  name: "나성호 (Kevin Na)"
+  bio: "데이터 사이언스 강사 · 헬로데이터사이언스"
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/HelloDataScience"
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope"
+      url: "mailto:hellodatasciencekorea@gmail.com"
+
+# ===== 모든 글에 적용될 기본값 =====
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: single
+      author_profile: true
+      read_time: true
+      comments: false
+      share: true
+      related: true
+      toc: true
+      toc_sticky: true
+
+# 한글 카테고리가 URL에 들어가 깨지지 않도록 슬러그 기반 경로 사용
+permalink: /posts/:title/
+
+# 홈 페이지네이션
+paginate: 10
+paginate_path: /page:num/
