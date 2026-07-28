@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<!--
+  오늘의 경기 — KBO · K리그 대시보드
+  https://www.hds.ai.kr/sports/
+
+  ⚠️ 공개 저장소에 올리기 전에 반드시 확인할 것
+  아래 MY_PROXY 주소는 이 파일이 브라우저로 전달되는 순간 누구나 볼 수 있습니다.
+  감출 방법은 없습니다. 대신 Apps Script 쪽에서 네이버 스포츠 주소만
+  허용하도록 막아두세요. (naver-proxy.gs 참고)
+-->
+
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>오늘의 경기</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root{
+    --board:#0E1512; --card:#151F1B; --card-hi:#1B2723; --line:#243029;
+    --chalk:#E9EFEA; --dim:#7C8B82; --dimmer:#4E5D55;
+    --amber:#FFB000; --amber-soft:#8A6410;
+    --kia:#EA0029; --suwon:#1B5FAA;
+    --radius:10px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:"Pretendard","Pretendard Variable",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--board);color:var(--chalk);font-family:var(--sans);
+       font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;padding:28px 20px 48px}
+  .wrap{max-width:1440px;margin:0 auto}
+
+  /* ── 상단 ── */
+  .top{display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .dateblock{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+  .date-big{font-family:var(--mono);font-size:38px;font-weight:600;letter-spacing:-.03em;
+            color:var(--amber);font-variant-numeric:tabular-nums;line-height:1}
+  .date-dow{font-size:14px;color:var(--dim)}
+  .date-tag{font-size:11px;letter-spacing:.14em;color:var(--board);background:var(--amber);
+            padding:2px 7px;border-radius:3px;font-weight:700}
+  .datenav{display:flex;gap:6px}
+  button{font-family:inherit;font-size:13px;color:var(--dim);background:transparent;
+         border:1px solid var(--line);padding:6px 13px;border-radius:6px;cursor:pointer;
+         transition:color .15s,border-color .15s,background .15s}
+  button:hover{color:var(--chalk);border-color:var(--dimmer)}
+  button[aria-pressed="true"]{color:var(--board);background:var(--chalk);border-color:var(--chalk);font-weight:600}
+  button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+  .status{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--dimmer);font-family:var(--mono)}
+
+  /* ── 응원팀 ── */
+  .pins{display:grid;gap:8px;margin:20px 0 28px}
+  .pin{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:var(--radius);
+       border-left:4px solid var(--pin-color,var(--dimmer));padding:14px 18px}
+  .pin-team{font-weight:700;font-size:15px;min-width:132px;color:var(--pin-color,var(--chalk))}
+  .pin-line{font-size:15px}
+  .pin-line .quiet{color:var(--dim)}
+  .pin-line .score{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums}
+  .pin-verdict{margin-left:auto;font-size:12px;font-weight:700;letter-spacing:.1em;
+               padding:3px 9px;border-radius:4px;white-space:nowrap}
+  .v-win{background:rgba(255,176,0,.14);color:var(--amber)}
+  .v-lose,.v-draw{background:rgba(233,239,234,.06);color:var(--dim)}
+  .v-live{background:var(--amber);color:var(--board)}
+
+  /* ── 3단 보드 ── */
+  .board{display:grid;grid-template-columns:1fr 1fr 340px;gap:28px;align-items:start}
+  .colhead{display:flex;align-items:center;gap:10px;margin:0 0 12px;
+           font-size:12px;font-weight:700;letter-spacing:.16em;color:var(--dim)}
+  .colhead .rule{flex:1;height:1px;background:var(--line)}
+  .colhead a{color:var(--dimmer);text-decoration:none;letter-spacing:.04em;font-weight:500}
+  .colhead a:hover{color:var(--amber)}
+
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;margin-bottom:12px}
+  .seg button{border:0;border-radius:0;padding:6px 16px;font-size:12px;letter-spacing:.08em;font-weight:600}
+  .seg button + button{border-left:1px solid var(--line)}
+  .seg button[aria-pressed="true"]{background:var(--card-hi);color:var(--amber)}
+
+  /* ── 경기 카드 ── */
+  .game{display:block;width:100%;text-align:left;background:var(--card);border-radius:var(--radius);
+        padding:13px 16px;margin-bottom:8px;border:1px solid transparent;cursor:pointer;
+        font-family:inherit;font-size:inherit;color:inherit;transition:border-color .15s,background .15s}
+  .game:hover{border-color:var(--dimmer)}
+  .game.pinned{background:var(--card-hi);border-color:var(--pin-color)}
+  .game.live{border-color:var(--amber-soft)}
+  .game.focus-marker{border-color:var(--amber)}
+  .row{display:flex;align-items:center;gap:10px;padding:3px 0}
+  .row .name{flex:1;font-size:15px;color:var(--dim)}
+  .row .num{font-family:var(--mono);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;
+            color:var(--dimmer);min-width:34px;text-align:right}
+  .row.won .name{color:var(--chalk);font-weight:700}
+  .row.won .num{color:var(--amber)}
+  .row.playing .name,.row.playing .num{color:var(--chalk)}
+  .home-dot{font-size:10px;color:var(--dimmer);letter-spacing:.1em}
+  .game-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:9px;padding-top:9px;
+             border-top:1px solid var(--line);font-size:12px;color:var(--dimmer);font-family:var(--mono)}
+  .chip{color:var(--dim)}
+  .chip.state{color:var(--chalk);font-weight:600;font-family:var(--sans)}
+  .chip.state.live{color:var(--amber)}
+  .chip.state.off{color:var(--dimmer);text-decoration:line-through}
+  .chip.wx{margin-left:auto;font-family:var(--sans)}
+  .chip.wx.rainy{color:var(--amber)}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--amber);display:inline-block;
+       animation:blink 1.6s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+  .starters{color:var(--dimmer);font-family:var(--sans)}
+  .subhead{font-size:11px;letter-spacing:.14em;color:var(--dimmer);margin:18px 0 8px;font-weight:700}
+
+  /* ── 지도 & 날씨 레일 ── */
+  .rail{position:sticky;top:20px}
+  #map{height:300px;border-radius:var(--radius);background:var(--card);margin-bottom:12px;z-index:1}
+  .leaflet-container{background:var(--card)!important;font-family:var(--sans)}
+  .leaflet-control-attribution{background:rgba(14,21,18,.8)!important;color:var(--dimmer)!important;font-size:9px!important}
+  .leaflet-control-attribution a{color:var(--dim)!important}
+  .venue-pin{display:flex;align-items:center;justify-content:center;width:22px;height:22px;
+             border-radius:50%;background:var(--card-hi);border:2px solid var(--amber);font-size:11px}
+  .wx-list{display:flex;flex-direction:column;gap:1px}
+  .wx-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--card);font-size:13px}
+  .wx-row:first-child{border-radius:var(--radius) var(--radius) 0 0}
+  .wx-row:last-child{border-radius:0 0 var(--radius) var(--radius)}
+  .wx-row .icon{font-size:16px;width:20px;text-align:center}
+  .wx-row .venue{flex:1;color:var(--chalk)}
+  .wx-row .venue small{display:block;color:var(--dimmer);font-size:11px}
+  .wx-row .temp{font-family:var(--mono);color:var(--dim);font-variant-numeric:tabular-nums}
+  .wx-row .pop{font-family:var(--mono);font-size:12px;color:var(--dimmer);min-width:38px;text-align:right}
+  .wx-row .pop.high{color:var(--amber);font-weight:700}
+
+  /* ── 상세 모달 ── */
+  .backdrop{position:fixed;inset:0;background:rgba(6,10,9,.78);z-index:1000;
+            display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow:auto}
+  .backdrop[hidden]{display:none}
+  .modal{background:var(--board);border:1px solid var(--line);border-radius:14px;
+         width:100%;max-width:660px;padding:24px}
+  .modal-head{display:flex;align-items:flex-start;gap:16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .modal-head .teams{flex:1}
+  .modal-head .matchup{font-size:20px;font-weight:700;letter-spacing:-.01em}
+  .modal-head .matchup .sc{font-family:var(--mono);color:var(--amber);font-variant-numeric:tabular-nums}
+  .modal-head .sub{font-size:12px;color:var(--dim);font-family:var(--mono);margin-top:5px}
+  .modal h4{font-size:11px;letter-spacing:.14em;color:var(--dimmer);margin:22px 0 10px;font-weight:700}
+
+  table.line{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;
+             font-variant-numeric:tabular-nums}
+  table.line th{color:var(--dimmer);font-weight:500;font-size:11px;padding:5px 4px;border-bottom:1px solid var(--line)}
+  table.line td{padding:7px 4px;text-align:center;color:var(--dim);border-bottom:1px solid var(--line)}
+  table.line td.team{text-align:left;color:var(--chalk);font-family:var(--sans);font-weight:600;white-space:nowrap}
+  table.line td.tot{color:var(--dim);font-weight:600}
+  table.line td.tot.r{color:var(--amber);font-weight:700}
+  table.line th.tot{color:var(--dim)}
+  table.line .sep{border-left:1px solid var(--line)}
+  .copybtn{font-size:11px;padding:3px 9px;margin-left:8px}
+
+  .mscore{display:grid;grid-template-columns:1fr auto auto auto 1fr;align-items:center;gap:4px 14px}
+  .mscore .tname{font-size:17px;font-weight:700;letter-spacing:-.01em}
+  .mscore .lft{text-align:right}
+  .mscore .mnum{font-family:var(--mono);font-size:34px;font-weight:600;color:var(--amber);
+                font-variant-numeric:tabular-nums;line-height:1}
+  .mscore .mnum.lost{color:var(--dim)}
+  .mscore .mcolon{color:var(--dimmer);font-size:18px}
+  .mscore .tsub{font-size:12px;color:var(--dim);font-family:var(--mono);margin-top:5px}
+  .mscore .tsub b{color:var(--chalk);font-weight:600}
+
+  .goals{display:grid;grid-template-columns:1fr 24px 1fr;gap:0 10px;align-items:center;font-size:14px}
+  .goals > div{padding:6px 0}
+  .goals .g-a{text-align:right;color:var(--chalk)}
+  .goals .g-h{text-align:left;color:var(--chalk)}
+  .goals .ball{text-align:center;font-size:12px;opacity:.75}
+  .goals .min{font-family:var(--mono);color:var(--amber);font-variant-numeric:tabular-nums;font-size:13px}
+
+  .cmp-head{display:grid;grid-template-columns:1fr 92px 1fr;gap:8px;font-size:13px;
+            font-weight:700;color:var(--chalk);margin-bottom:12px}
+  .cmp-head .a{text-align:right}
+  .cmp-head .c{text-align:center;color:var(--dimmer);font-weight:400;font-size:11px;letter-spacing:.1em}
+  .cmp{display:flex;flex-direction:column;gap:9px}
+  .cmp-row{display:grid;grid-template-columns:44px 1fr 92px 1fr 44px;align-items:center;gap:8px;font-size:13px}
+  .cmp-row .v{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--chalk)}
+  .cmp-row .v.r{text-align:right}
+  .cmp-row .lbl{text-align:center;color:var(--dim);font-size:12px}
+  .cmp-row .lbl.unk{color:var(--dimmer);font-family:var(--mono);font-size:11px}
+  .bar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;display:flex}
+  .bar i{display:block;height:100%;background:var(--dimmer)}
+  .bar.l{justify-content:flex-end}
+  .bar.l i{background:var(--amber)}
+  .srcnote{font-size:11px;color:var(--dimmer);font-family:var(--mono);margin-top:12px}
+
+  details.raw{margin-top:22px}
+  details.raw summary{cursor:pointer;font-size:12px;color:var(--dim);letter-spacing:.08em}
+  details.raw summary:hover{color:var(--amber)}
+  details.raw pre{background:var(--card);border-radius:8px;padding:14px;overflow:auto;max-height:340px;
+                  font-family:var(--mono);font-size:11px;color:var(--dim);line-height:1.55;margin:10px 0 0}
+  .modal-foot{display:flex;gap:8px;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+  .modal-foot a,.modal-foot button{display:inline-block;color:var(--dim);text-decoration:none;
+      border:1px solid var(--line);border-radius:6px;padding:7px 14px;font-size:13px;background:transparent;cursor:pointer}
+  .modal-foot a:hover,.modal-foot button:hover{border-color:var(--amber);color:var(--amber)}
+  .modal-foot .spacer{flex:1}
+
+  /* ── 상태 ── */
+  .empty{padding:22px 16px;border:1px dashed var(--line);border-radius:var(--radius);
+         color:var(--dim);font-size:14px;text-align:center}
+  .note-line{font-size:12px;color:var(--dimmer);padding:8px 2px;font-family:var(--mono)}
+  .note-line button{padding:2px 8px;font-size:11px;margin-left:6px}
+  .fail{background:var(--card);border-radius:var(--radius);border-left:4px solid var(--amber);padding:16px 18px;font-size:14px}
+  .fail h3{margin:0 0 6px;font-size:14px;color:var(--amber)}
+  .fail p{margin:0 0 12px;color:var(--dim);font-size:13px;line-height:1.6}
+  .fail a{display:inline-block;color:var(--chalk);text-decoration:none;border:1px solid var(--line);
+          border-radius:6px;padding:6px 12px;font-size:13px}
+  .fail a:hover{border-color:var(--amber);color:var(--amber)}
+  .diag{width:100%;border-collapse:collapse;margin:0 0 14px;font-family:var(--mono);font-size:12px}
+  .diag td{padding:5px 0;border-bottom:1px solid var(--line);color:var(--dim);vertical-align:top}
+  .diag td:first-child{width:110px;color:var(--chalk)}
+  .skeleton{height:74px;background:var(--card);border-radius:var(--radius);margin-bottom:8px;opacity:.5}
+
+  footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);
+         display:flex;gap:18px;flex-wrap:wrap;font-size:13px}
+  footer a{color:var(--dim);text-decoration:none}
+  footer a:hover{color:var(--amber)}
+  footer .note{margin-left:auto;color:var(--dimmer);font-size:12px;font-family:var(--mono)}
+
+  @media (max-width:1180px){
+    .board{grid-template-columns:1fr 1fr}
+    .rail{grid-column:1 / -1;position:static}
+    #map{height:260px}
+    .wx-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1px}
+    .wx-row{border-radius:var(--radius)!important}
+  }
+  @media (max-width:760px){
+    body{padding:20px 14px 36px}
+    .board{grid-template-columns:1fr;gap:24px}
+    .date-big{font-size:30px}
+    .pin{flex-wrap:wrap;gap:8px}
+    .pin-team{min-width:0}
+    .cmp-row{grid-template-columns:38px 1fr 78px 1fr 38px;gap:5px;font-size:12px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="dateblock">
+      <span class="date-big" id="dateBig">--.--</span>
+      <span class="date-dow" id="dateDow"></span>
+      <span class="date-tag" id="dateTag" hidden>오늘</span>
+    </div>
+    <nav class="datenav">
+      <button id="btnPrev">‹ 어제</button>
+      <button id="btnToday" aria-pressed="true">오늘</button>
+      <button id="btnNext">내일 ›</button>
+    </nav>
+    <div class="status">
+      <span id="updated">불러오는 중</span>
+      <button id="btnRefresh">새로고침</button>
+    </div>
+  </header>
+
+  <section class="pins" id="pins"></section>
+
+  <main class="board">
+    <section>
+      <h2 class="colhead">⚾ KBO 리그 <span class="rule"></span>
+        <a href="https://m.sports.naver.com/kbaseball/schedule/index" target="_blank" rel="noopener">네이버</a></h2>
+      <div id="kbo"><div class="skeleton"></div><div class="skeleton"></div></div>
+    </section>
+
+    <section>
+      <h2 class="colhead">⚽ K리그 <span class="rule"></span>
+        <a href="https://m.sports.naver.com/kfootball/schedule/index" target="_blank" rel="noopener">네이버</a></h2>
+      <div class="seg" id="leagueSeg">
+        <button data-lv="all" aria-pressed="true">전체</button>
+        <button data-lv="1" aria-pressed="false">K리그1</button>
+        <button data-lv="2" aria-pressed="false">K리그2</button>
+      </div>
+      <div id="kfoot"><div class="skeleton"></div><div class="skeleton"></div></div>
+    </section>
+
+    <aside class="rail">
+      <h2 class="colhead">📍 오늘의 구장 <span class="rule"></span></h2>
+      <div id="map"></div>
+      <div class="wx-list" id="wx"></div>
+    </aside>
+  </main>
+
+  <footer>
+    <a href="https://m.sports.naver.com/kbaseball/record/index" target="_blank" rel="noopener">KBO 순위</a>
+    <a href="https://m.sports.naver.com/kfootball/record/index" target="_blank" rel="noopener">K리그 순위</a>
+    <a href="https://www.koreabaseball.com/Schedule/Schedule.aspx" target="_blank" rel="noopener">KBO 공식</a>
+    <a href="https://www.kleague.com/" target="_blank" rel="noopener">K리그 공식</a>
+    <a href="https://www.hds.ai.kr/" style="color:var(--dimmer)">← Hello Data Science</a>
+    <span class="note" id="route"></span>
+  </footer>
+</div>
+
+<div class="backdrop" id="backdrop" hidden>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="경기 상세"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  /* ══════════ 설정 ══════════ */
+
+  /* Apps Script 개인 프록시. 이 주소가 채워져 있으면 다른 경로보다 먼저 쓰인다.
+     주소를 아는 사람은 누구나 이 프록시를 쓸 수 있으니 공유하지 말 것. */
+  var MY_PROXY = "https://script.google.com/macros/s/AKfycbwE3p7FnK5_4DIkb0Je478VEQ7-bunW8kZTOZpAAX-PuzfKejEGdA5ZcP3anTTz-k5j/exec";
+
+  var PINS = [
+    { key:"kbo", label:"KIA 타이거즈", color:"var(--kia)",
+      match:function(n){ return /KIA|기아|타이거즈/i.test(n); } },
+    { key:"kfoot", label:"수원 삼성", color:"var(--suwon)",
+      match:function(n){
+        var t = String(n).replace(/\s/g,"");
+        if(/수원FC|수원시청/i.test(t)) return false;      /* 수원FC는 다른 팀 */
+        return /삼성|블루윙/.test(t) || t === "수원";
+      } }
+  ];
+
+  var API = "https://api-gw.sports.naver.com/schedule/games";
+  var FIELDS = {
+    kbo:  "basic,superCategoryId,categoryName,stadium,statusNum,gameOnAir,title,"
+        + "homeStarterName,awayStarterName,winPitcherName,losePitcherName,broadChannel",
+    kfoot:"basic,superCategoryId,categoryName,stadium,statusNum,gameOnAir,title,roundCode,broadChannel"
+  };
+  var CATEGORY = { kbo:"kbaseball", kfoot:"kfootball" };
+
+  var ROUTES = MY_PROXY ? [
+    { name:"내 프록시", url:function(u){ return MY_PROXY + "?url=" + encodeURIComponent(u); } }
+  ] : [];
+  ROUTES = ROUTES.concat([
+    { name:"직접 호출",     url:function(u){ return u; } },
+    { name:"allorigins",    url:function(u){ return "https://api.allorigins.win/raw?url=" + encodeURIComponent(u); } },
+    { name:"allorigins/get",url:function(u){ return "https://api.allorigins.win/get?url=" + encodeURIComponent(u); },
+      unwrap:function(o){ return (o && typeof o.contents === "string") ? JSON.parse(o.contents) : o; } },
+    { name:"codetabs",      url:function(u){ return "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(u); } },
+    { name:"cors.lol",      url:function(u){ return "https://api.cors.lol/?url=" + encodeURIComponent(u); } },
+    { name:"corsproxy.io",  url:function(u){ return "https://corsproxy.io/?url=" + encodeURIComponent(u); } }
+  ]);
+  var workingRoute = null, diag = [];
+
+  /* 구장 좌표 — 네이버가 주는 짧은 표기에 맞춰 종목별로 분리.
+     "광주"는 야구에선 챔피언스필드, 축구에선 월드컵경기장이라 반드시 나눠야 한다. */
+  var VENUES = {
+    kbo: {
+      "잠실":[37.5122,127.0719,"잠실야구장"], "고척":[37.4982,126.8672,"고척스카이돔"],
+      "문학":[37.4370,126.6932,"인천SSG랜더스필드"], "인천":[37.4370,126.6932,"인천SSG랜더스필드"],
+      "수원":[37.2997,127.0097,"수원KT위즈파크"], "대전":[36.3172,127.4290,"대전한화생명볼파크"],
+      "광주":[35.1682,126.8890,"광주-기아 챔피언스필드"], "대구":[35.8411,128.6816,"대구삼성라이온즈파크"],
+      "사직":[35.1940,129.0616,"사직야구장"], "창원":[35.2225,128.5823,"창원NC파크"],
+      "울산":[35.5372,129.2657,"울산문수야구장"], "청주":[36.6390,127.4680,"청주야구장"],
+      "포항":[36.0080,129.3596,"포항야구장"]
+    },
+    kfoot: {
+      "서울월드컵":[37.5683,126.8973,"서울월드컵경기장"], "목동":[37.5370,126.8720,"목동종합운동장"],
+      "인천전용":[37.4720,126.6420,"인천축구전용경기장"], "수원월드컵":[37.2866,127.0367,"수원월드컵경기장"],
+      "수원종합":[37.3005,127.0100,"수원종합운동장"], "안양종합":[37.4020,126.9450,"안양종합운동장"],
+      "부천종합":[37.5060,126.7920,"부천종합운동장"], "광주월드컵":[35.1520,126.8890,"광주축구전용구장"],
+      "광주전용":[35.1520,126.8890,"광주축구전용구장"], "전주월드컵":[35.8686,127.0663,"전주월드컵경기장"],
+      "울산문수":[35.5397,129.2659,"울산문수축구경기장"], "포항스틸야드":[36.0058,129.3607,"포항스틸야드"],
+      "대구전용":[35.8390,128.5910,"대구iM뱅크파크"], "대구iM":[35.8390,128.5910,"대구iM뱅크파크"],
+      "제주월드컵":[33.2470,126.5090,"제주월드컵경기장"], "김천종합":[36.1210,128.1160,"김천종합운동장"],
+      "탄천종합":[37.4230,127.1290,"탄천종합운동장"], "성남":[37.4230,127.1290,"탄천종합운동장"],
+      "안산":[37.3230,126.8280,"안산와스타디움"], "아산":[36.7880,127.0040,"이순신종합운동장"],
+      "부산아시아드":[35.1900,129.0570,"부산아시아드주경기장"], "구덕":[35.1180,129.0140,"부산구덕운동장"],
+      "창원축구센터":[35.2130,128.5820,"창원축구센터"], "천안종합":[36.7900,127.1750,"천안종합운동장"],
+      "광양전용":[34.9370,127.6960,"광양축구전용구장"], "광양":[34.9370,127.6960,"광양축구전용구장"],
+      "청주":[36.6360,127.4630,"청주종합경기장"], "화성종합":[37.1980,126.8300,"화성종합경기타운"],
+      "김포솔터":[37.6350,126.7160,"김포솔터축구장"], "대전월드컵":[36.3660,127.3210,"대전월드컵경기장"],
+      "춘천송암":[37.8630,127.7370,"춘천송암스포츠타운"], "강릉":[37.7700,128.8760,"강릉하이원아레나"]
+    }
+  };
+
+  /* WMO 날씨 코드 */
+  function wxIcon(c){
+    if(c === 0) return ["☀️","맑음"];
+    if(c <= 2)  return ["🌤️","구름 조금"];
+    if(c === 3) return ["☁️","흐림"];
+    if(c <= 48) return ["🌫️","안개"];
+    if(c <= 57) return ["🌦️","이슬비"];
+    if(c <= 67) return ["🌧️","비"];
+    if(c <= 77) return ["🌨️","눈"];
+    if(c <= 82) return ["🌧️","소나기"];
+    if(c <= 86) return ["🌨️","소나기눈"];
+    return ["⛈️","뇌우"];
+  }
+
+  /* 상세 기록 엔드포인트 — 응답 구조를 확정하지 못해 후보를 순서대로 시도한다 */
+  var DETAIL_PATHS = { kbo:["record","preview"], kfoot:["record","relay","preview"] };
+
+  /* 항목명과 순서는 네이버 스포츠 '기록' 탭 기준 */
+  var STAT_DEF = {
+    kbo: {
+      order: ["안타","홈런","도루","삼진","병살","실책"],
+      hide: [],
+      label: {
+        hit:"안타", hits:"안타", h:"안타", 안타:"안타",
+        homerun:"홈런", homeruns:"홈런", hr:"홈런", 홈런:"홈런",
+        steal:"도루", steals:"도루", sb:"도루", stealbase:"도루", stolenbase:"도루", 도루:"도루",
+        strikeout:"삼진", strikeouts:"삼진", so:"삼진", kk:"삼진", k:"삼진", 삼진:"삼진",
+        gd:"병살", gdp:"병살", gidp:"병살", doubleplay:"병살", doubleplays:"병살",
+        dp:"병살", dbp:"병살", bs:"병살", byungsal:"병살", 병살:"병살", 병살타:"병살",
+        error:"실책", errors:"실책", err:"실책", e:"실책", 실책:"실책",
+        run:"득점", r:"득점", score:"득점", 득점:"득점",
+        bb:"볼넷", fourball:"볼넷", walk:"볼넷", baseonballs:"볼넷", 볼넷:"볼넷"
+      }
+    },
+    kfoot: {
+      order: ["볼점유율","슈팅","유효슈팅","코너킥","오프사이드","선수교체","파울","경고","퇴장"],
+      hide: ["goalkick","goalkicks","throwin","throwins","freekick","freekicks"],
+      label: {
+        possession:"볼점유율", ballpossession:"볼점유율", possessionrate:"볼점유율",
+        ballpossessionrate:"볼점유율", 점유율:"볼점유율", 볼점유율:"볼점유율",
+        shoot:"슈팅", shooting:"슈팅", shoottotal:"슈팅", shootnum:"슈팅", shots:"슈팅", 슈팅:"슈팅",
+        shotsongoal:"유효슈팅", shootvalid:"유효슈팅", validshoot:"유효슈팅",
+        shootontarget:"유효슈팅", shotsontarget:"유효슈팅", shootgoal:"유효슈팅",
+        effectiveshoot:"유효슈팅", 유효슈팅:"유효슈팅",
+        cornerkick:"코너킥", corner:"코너킥", corners:"코너킥", 코너킥:"코너킥",
+        offside:"오프사이드", offsides:"오프사이드", 오프사이드:"오프사이드",
+        substitution:"선수교체", substitutions:"선수교체", sub:"선수교체", subs:"선수교체",
+        playerchange:"선수교체", change:"선수교체", 선수교체:"선수교체", 교체:"선수교체",
+        foul:"파울", fouls:"파울", 파울:"파울",
+        yellow:"경고", yellowcard:"경고", yellowcards:"경고", warning:"경고",
+        caution:"경고", 경고:"경고",
+        red:"퇴장", redcard:"퇴장", redcards:"퇴장", exit:"퇴장", expulsion:"퇴장",
+        sendoff:"퇴장", dismissal:"퇴장", out:"퇴장", 퇴장:"퇴장"
+      }
+    }
+  };
+  var PCT = { "볼점유율":true };
+
+  function norm(k){ return String(k).toLowerCase().replace(/[^a-z0-9가-힣]/g,""); }
+
+  /* ══════════ 유틸 ══════════ */
+  var $ = function(id){ return document.getElementById(id); };
+  var DOW = ["일","월","화","수","목","금","토"];
+
+  function ymd(d){
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  }
+  function shift(d,n){ var x = new Date(d); x.setDate(x.getDate()+n); return x; }
+  function esc(s){
+    return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+  function pick(o){
+    for(var i=1;i<arguments.length;i++){
+      var v = o && o[arguments[i]];
+      if(v !== undefined && v !== null && v !== "") return v;
+    }
+    return null;
+  }
+  function num(v){ var n = parseInt(v,10); return isNaN(n) ? null : n; }
+
+  /* ══════════ 통신 ══════════ */
+  function reason(err){
+    var m = String((err && err.message) || err || "");
+    if(/Failed to fetch|NetworkError|Load failed|ERR_/i.test(m)) return "차단됨 — CORS 또는 네트워크";
+    if(/^HTTP 4/.test(m)) return m + " — 프록시가 거부";
+    if(/^HTTP 5/.test(m)) return m + " — 프록시 장애";
+    if(/JSON|Unexpected|token/i.test(m)) return "응답이 JSON이 아님";
+    return m || "알 수 없는 실패";
+  }
+
+  function fetchJSON(url){
+    var order = workingRoute
+      ? [workingRoute].concat(ROUTES.filter(function(r){ return r !== workingRoute; }))
+      : ROUTES.slice();
+    return order.reduce(function(chain, route){
+      return chain.catch(function(){
+        return fetch(route.url(url), { cache:"no-store" })
+          .then(function(res){ if(!res.ok) throw new Error("HTTP " + res.status); return res.text(); })
+          .then(function(txt){
+            var data = JSON.parse(txt);
+            if(route.unwrap) data = route.unwrap(data);
+            workingRoute = route;
+            $("route").textContent = "경로: " + route.name;
+            return data;
+          })
+          .catch(function(err){ diag.push({ route:route.name, msg:reason(err) }); throw err; });
+      });
+    }, Promise.reject(new Error("start")));
+  }
+
+  function buildUrl(sport, from, to){
+    return API + "?fields=" + encodeURIComponent(FIELDS[sport])
+      + "&upperCategoryId=" + CATEGORY[sport]
+      + "&fromDate=" + from + "&toDate=" + to + "&size=500";
+  }
+
+  /* ══════════ 정규화 ══════════ */
+  function teamName(g, side){
+    /* 대체값을 화면에 내보내지 않는다 — 못 찾으면 null로 두고 카드에서 걸러낸다 */
+    return pick(g, side+"TeamName", side+"TeamShortName", side+"TeamNameKo",
+                   side+"TeamCode", side+"TeamNameEng");
+  }
+
+  function normalize(g, sport){
+    var status = String(pick(g,"statusCode","gameStatus","status") || "").toUpperCase();
+    var state = "before";
+    if(/CANCEL|POSTPONE|SUSPEND|DELAY/.test(status)) state = "off";
+    else if(/RESULT|END|FINAL|CLOSE/.test(status))   state = "done";
+    else if(/START|LIVE|PLAY|PROGRESS/.test(status)) state = "live";
+
+    var hs = num(pick(g,"homeTeamScore","homeScore"));
+    var as = num(pick(g,"awayTeamScore","awayScore"));
+    if(state === "before" && (hs !== null || as !== null) && status) state = "live";
+
+    var league = String(pick(g,"categoryName","leagueName","categoryId") || "");
+    var lv = /2/.test(league) ? "2" : /1|클래식|K리그$/.test(league) ? "1" : "?";
+
+    return {
+      sport: sport,
+      id:    pick(g,"gameId","id"),
+      date:  String(pick(g,"gameDate","gameDateTime") || "").slice(0,10).replace(/-/g,""),
+      time:  pick(g,"time","gameTime") || String(pick(g,"gameDateTime") || "").slice(11,16),
+      home:  teamName(g,"home"),
+      away:  teamName(g,"away"),
+      homeScore: hs, awayScore: as,
+      stadium: pick(g,"stadium","stadiumName"),
+      league: league, level: lv,
+      title:  pick(g,"title"),
+      channel: pick(g,"broadChannel"),
+      homeStarter: pick(g,"homeStarterName"),
+      awayStarter: pick(g,"awayStarterName"),
+      winPitcher:  pick(g,"winPitcherName"),
+      losePitcher: pick(g,"losePitcherName"),
+      note:  pick(g,"statusInfo","gameStatusText","specialMatchInfo"),
+      state: state,
+      raw:   g
+    };
+  }
+
+  function load(sport, center){
+    return fetchJSON(buildUrl(sport, ymd(shift(center,-1)), ymd(shift(center,1))))
+      .then(function(data){
+        var games = (data && data.result && data.result.games) || (data && data.games) || [];
+        return games.map(function(g){ return normalize(g, sport); });
+      });
+  }
+
+  /* ══════════ 구장 → 좌표 ══════════ */
+  function venueOf(g){
+    if(!g.stadium) return null;
+    var t = String(g.stadium).replace(/\s/g,""), table = VENUES[g.sport] || {};
+    var keys = Object.keys(table).sort(function(a,b){ return b.length - a.length; });  /* 긴 키 우선 */
+    for(var i=0;i<keys.length;i++){
+      if(t.indexOf(keys[i]) === 0 || t.indexOf(keys[i]) > -1){
+        var v = table[keys[i]];
+        return { lat:v[0], lng:v[1], name:v[2], key:keys[i] };
+      }
+    }
+    return null;
+  }
+
+  /* ══════════ 렌더: 경기 카드 ══════════ */
+  var wxByVenue = {};
+
+  function gameCard(g, pin){
+    var showScore = (g.state === "live" || g.state === "done") && (g.homeScore !== null || g.awayScore !== null);
+    var homeWon = showScore && g.homeScore !== null && g.awayScore !== null && g.homeScore > g.awayScore;
+    var awayWon = showScore && g.homeScore !== null && g.awayScore !== null && g.awayScore > g.homeScore;
+
+    function row(name, score, won, isHome){
+      var cls = "row";
+      if(g.state === "done" && won) cls += " won";
+      else if(g.state === "live")   cls += " playing";
+      return '<div class="' + cls + '"><span class="name">' + esc(name)
+        + (isHome ? ' <span class="home-dot">HOME</span>' : '')
+        + '</span><span class="num">' + (showScore ? (score === null ? "-" : score) : "") + '</span></div>';
+    }
+
+    var stateCls = "chip state" + (g.state === "live" ? " live" : g.state === "off" ? " off" : "");
+    var stateTxt = g.state === "live" ? '<span class="dot"></span> ' + esc(g.note || "경기 중")
+                 : g.state === "done" ? "종료"
+                 : g.state === "off"  ? esc(g.note || "취소")
+                 : esc(g.time || "시간 미정");
+
+    var foot = ['<span class="' + stateCls + '">' + stateTxt + '</span>'];
+    if(g.state !== "before" && g.time) foot.push('<span class="chip">' + esc(g.time) + '</span>');
+    if(g.stadium) foot.push('<span class="chip">' + esc(g.stadium) + '</span>');
+    if(g.channel) foot.push('<span class="chip">' + esc(g.channel) + '</span>');
+
+    var v = venueOf(g), w = v && wxByVenue[v.key + "|" + g.sport];
+    if(w && g.state === "before"){
+      var hi = w.pop >= 50 ? " rainy" : "";
+      foot.push('<span class="chip wx' + hi + '">' + w.icon + ' ' + w.temp + '° · 강수 ' + w.pop + '%</span>');
+    } else if(g.state === "before" && (g.homeStarter || g.awayStarter)){
+      foot.push('<span class="starters" style="margin-left:auto">선발 '
+        + esc(g.awayStarter || "미정") + ' · ' + esc(g.homeStarter || "미정") + '</span>');
+    }
+
+    var cls = "game" + (g.state === "live" ? " live" : "") + (pin ? " pinned" : "");
+    var style = pin ? ' style="--pin-color:' + pin.color + '"' : "";
+
+    return '<button class="' + cls + '"' + style + ' data-gid="' + esc(g.id) + '" data-sport="' + g.sport + '">'
+      + row(g.away, g.awayScore, awayWon, false)
+      + row(g.home, g.homeScore, homeWon, true)
+      + '<div class="game-foot">' + foot.join("") + '</div></button>';
+  }
+
+  function pinOf(g){
+    for(var i=0;i<PINS.length;i++){
+      var p = PINS[i];
+      if(p.key === g.sport && ((g.home && p.match(g.home)) || (g.away && p.match(g.away)))) return p;
+    }
+    return null;
+  }
+
+  function renderColumn(el, games){
+    var named = games.filter(function(g){ return g.home && g.away; });
+    var unnamed = games.filter(function(g){ return !(g.home && g.away); });
+
+    if(!named.length && !unnamed.length){
+      el.innerHTML = '<div class="empty">이 날은 편히 쉬세요. 예정된 경기가 없습니다.</div>';
+      return;
+    }
+    named.sort(function(a,b){
+      var pa = pinOf(a) ? 0 : 1, pb = pinOf(b) ? 0 : 1;
+      if(pa !== pb) return pa - pb;
+      return String(a.time).localeCompare(String(b.time));
+    });
+
+    var html = named.map(function(g){ return gameCard(g, pinOf(g)); }).join("");
+    if(!named.length) html = '<div class="empty">이 날은 편히 쉬세요. 예정된 경기가 없습니다.</div>';
+
+    /* 팀 이름을 못 읽은 경기는 지어내지 않고 따로 알린다 */
+    if(unnamed.length){
+      html += '<div class="note-line">팀 이름이 비어 있는 경기 ' + unnamed.length + '건'
+        + '<button data-unnamed="' + unnamed[0].sport + '">원본 보기</button></div>';
+    }
+    el.innerHTML = html;
+    el._unnamed = unnamed;
+  }
+
+  /* ══════════ 렌더: 응원팀 ══════════ */
+  function renderPins(all, dateKey){
+    $("pins").innerHTML = PINS.map(function(p){
+      var mine = all.filter(function(g){
+        return g.sport === p.key && ((g.home && p.match(g.home)) || (g.away && p.match(g.away)));
+      });
+      var onDate = mine.filter(function(g){ return g.date === dateKey; })[0];
+      var line, verdict = "";
+
+      if(onDate){
+        var g = onDate, isHome = p.match(g.home || "");
+        var opp = isHome ? g.away : g.home;
+        var ms = isHome ? g.homeScore : g.awayScore;
+        var os = isHome ? g.awayScore : g.homeScore;
+
+        if(g.state === "before"){
+          line = '<span class="score">' + esc(g.time || "시간 미정") + '</span> ' + esc(opp)
+               + '<span class="quiet"> · ' + (isHome ? "홈" : "원정")
+               + (g.stadium ? " · " + esc(g.stadium) : "") + '</span>';
+        } else if(g.state === "off"){
+          line = esc(opp) + '<span class="quiet"> · ' + esc(g.note || "취소") + '</span>';
+        } else {
+          line = esc(opp) + ' <span class="score">' + (ms === null ? "-" : ms) + ' : '
+               + (os === null ? "-" : os) + '</span><span class="quiet"> · '
+               + (isHome ? "홈" : "원정") + '</span>';
+          if(g.state === "live") verdict = '<span class="pin-verdict v-live">' + esc(g.note || "경기 중") + '</span>';
+          else if(ms !== null && os !== null)
+            verdict = ms > os ? '<span class="pin-verdict v-win">승</span>'
+                    : ms < os ? '<span class="pin-verdict v-lose">패</span>'
+                    : '<span class="pin-verdict v-draw">무</span>';
+        }
+      } else {
+        var near = mine.filter(function(g){ return g.date !== dateKey; })
+                       .sort(function(a,b){ return a.date.localeCompare(b.date); })[0];
+        if(near){
+          var when = near.date > dateKey ? "다음" : "직전";
+          var h = p.match(near.home || ""), o = h ? near.away : near.home;
+          var ns = h ? near.homeScore : near.awayScore, oo = h ? near.awayScore : near.homeScore;
+          var tail = (near.state === "done" && ns !== null)
+            ? ' <span class="score">' + ns + ' : ' + oo + '</span>'
+            : ' <span class="quiet">' + esc(near.time || "") + '</span>';
+          line = '<span class="quiet">경기 없음 · ' + when + ' 상대 </span>' + esc(o) + tail;
+        } else line = '<span class="quiet">경기 없음</span>';
+      }
+      return '<div class="pin" style="--pin-color:' + p.color + '">'
+        + '<span class="pin-team">' + esc(p.label) + '</span>'
+        + '<span class="pin-line">' + line + '</span>' + verdict + '</div>';
+    }).join("");
+  }
+
+  /* ══════════ 지도 & 날씨 ══════════ */
+  var map = null, markers = [];
+
+  function drawMap(games){
+    if(typeof L === "undefined"){ $("map").style.display = "none"; return; }
+    if(!map){
+      map = L.map("map",{ zoomControl:false, attributionControl:true }).setView([36.4,127.9],6.4);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+        { attribution:"© OpenStreetMap · CARTO", maxZoom:14 }).addTo(map);
+      L.control.zoom({ position:"bottomright" }).addTo(map);
+    }
+    markers.forEach(function(m){ map.removeLayer(m); });
+    markers = [];
+
+    var pts = [];
+    games.forEach(function(g){
+      var v = venueOf(g);
+      if(!v) return;
+      var pin = pinOf(g);
+      var color = pin ? (pin.key === "kbo" ? "#EA0029" : "#1B5FAA") : "#FFB000";
+      var icon = L.divIcon({
+        className:"", iconSize:[22,22], iconAnchor:[11,11],
+        html:'<div class="venue-pin" style="border-color:' + color + '">'
+             + (g.sport === "kbo" ? "⚾" : "⚽") + '</div>'
+      });
+      var m = L.marker([v.lat,v.lng],{ icon:icon }).addTo(map);
+      var sc = (g.homeScore !== null && g.awayScore !== null)
+        ? " " + g.awayScore + ":" + g.homeScore : "";
+      m.bindTooltip(esc(g.away) + " vs " + esc(g.home) + sc + "<br>" + esc(v.name),
+        { direction:"top", offset:[0,-10] });
+      m.on("click", function(){
+        var el = document.querySelector('[data-gid="' + g.id + '"]');
+        if(el){
+          document.querySelectorAll(".focus-marker").forEach(function(n){ n.classList.remove("focus-marker"); });
+          el.classList.add("focus-marker");
+          el.scrollIntoView({ block:"center", behavior:"smooth" });
+        }
+      });
+      markers.push(m);
+      pts.push([v.lat,v.lng]);
+    });
+    if(pts.length) map.fitBounds(pts,{ padding:[36,36], maxZoom:9 });
+  }
+
+  function loadWeather(games){
+    var seen = {}, list = [];
+    games.forEach(function(g){
+      var v = venueOf(g);
+      if(!v) return;
+      var key = v.key + "|" + g.sport;
+      if(seen[key]) return;
+      seen[key] = 1;
+      list.push({ key:key, v:v, g:g });
+    });
+    if(!list.length){ $("wx").innerHTML = ""; return Promise.resolve(); }
+
+    var lats = list.map(function(x){ return x.v.lat; }).join(",");
+    var lngs = list.map(function(x){ return x.v.lng; }).join(",");
+    var d = list[0].g.date;
+    var day = d.slice(0,4) + "-" + d.slice(4,6) + "-" + d.slice(6,8);
+    var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lats + "&longitude=" + lngs
+      + "&hourly=temperature_2m,precipitation_probability,weather_code"
+      + "&timezone=Asia%2FSeoul&start_date=" + day + "&end_date=" + day;
+
+    /* Open-Meteo는 CORS가 열려 있어 프록시 없이 직접 부른다 */
+    return fetch(url).then(function(r){ return r.json(); }).then(function(data){
+      var arr = Array.isArray(data) ? data : [data];
+      var rows = "";
+      list.forEach(function(x, i){
+        var d0 = arr[i]; if(!d0 || !d0.hourly) return;
+        var hh = parseInt(String(x.g.time || "18:00").slice(0,2),10);
+        if(isNaN(hh)) hh = 18;
+        var idx = d0.hourly.time.findIndex(function(t){ return parseInt(t.slice(11,13),10) === hh; });
+        if(idx < 0) idx = 18;
+        var code = d0.hourly.weather_code[idx];
+        var temp = Math.round(d0.hourly.temperature_2m[idx]);
+        var pop  = d0.hourly.precipitation_probability[idx];
+        var ic = wxIcon(code);
+        wxByVenue[x.key] = { icon:ic[0], temp:temp, pop:pop };
+        rows += '<div class="wx-row"><span class="icon">' + ic[0] + '</span>'
+          + '<span class="venue">' + esc(x.v.name) + '<small>' + esc(x.g.time || "") + ' · ' + ic[1] + '</small></span>'
+          + '<span class="temp">' + temp + '°</span>'
+          + '<span class="pop' + (pop >= 50 ? " high" : "") + '">' + pop + '%</span></div>';
+      });
+      $("wx").innerHTML = rows;
+    }).catch(function(){
+      $("wx").innerHTML = '<div class="wx-row"><span class="venue">날씨를 못 불러왔습니다</span></div>';
+    });
+  }
+
+  /* ══════════ 상세 모달 ══════════ */
+
+  /* 네이버 상세 응답의 정확한 구조를 확인하지 못해, 트리를 훑어
+     (1) 이닝별 스코어보드  (2) 득점 기록  두 모양만 좁혀서 찾는다. */
+
+  function findLineScore(root){
+    function ok(x){ return x === null || x === "" || x === "-" || !isNaN(parseInt(x,10)); }
+    function cell(x){ return (x === null || x === "") ? "-" : String(x); }
+    function asInn(v){
+      if(!Array.isArray(v) || v.length < 5 || v.length > 18) return null;
+      return v.every(ok) ? v.map(cell) : null;
+    }
+
+    function side(o){
+      if(!o || typeof o !== "object") return null;
+      var inn = asInn(o);                       /* 이닝 배열이 곧 이 값인 경우 */
+
+      if(!inn){                                 /* 하위 속성에 배열로 들어 있는 경우 */
+        Object.keys(o).forEach(function(k){ if(!inn) inn = asInn(o[k]); });
+      }
+
+      /* 숫자 키로 흩어진 경우: 키를 정렬해 순서대로 담는다.
+         0부터 시작하든 1부터 시작하든 첫 회를 흘리지 않는다. */
+      if(!inn){
+        var nk = Object.keys(o).filter(function(k){ return /^\d+$/.test(k); })
+                        .map(Number).sort(function(a,b){ return a - b; });
+        if(nk.length >= 5 && nk.length <= 18){
+          var arr = nk.map(function(i){ return o[i]; });
+          if(arr.every(ok)) inn = arr.map(cell);
+        }
+      }
+      if(!inn) return null;
+
+      function g(){
+        for(var i=0;i<arguments.length;i++){
+          var v = o[arguments[i]];
+          if(v !== undefined && v !== null && v !== "") return v;
+        }
+        return null;
+      }
+      return { inn:inn,
+               r:g("r","R","run","runs","score","totalScore"),
+               h:g("h","H","hit","hits"),
+               e:g("e","E","error","errors"),
+               b:g("b","B","bb","BB","fourBall","baseOnBalls") };
+    }
+
+    var res = null;
+    (function walk(o, depth){
+      if(res || !o || typeof o !== "object" || depth > 7) return;
+      var keys = Object.keys(o);
+      var ak = keys.filter(function(k){ return /away/i.test(k); })[0];
+      var hk = keys.filter(function(k){ return /home/i.test(k); })[0];
+      if(ak && hk){
+        var a = side(o[ak]), h = side(o[hk]);
+        if(a && h){ res = { away:a, home:h }; return; }
+      }
+      keys.forEach(function(k){ if(!res && o[k] && typeof o[k] === "object") walk(o[k], depth+1); });
+    })(root, 0);
+    return res;
+  }
+
+  function findGoals(root){
+    var out = [];
+    (function walk(o, depth, path){
+      if(!o || typeof o !== "object" || depth > 8) return;
+      if(Array.isArray(o)){
+        o.forEach(function(it){ walk(it, depth+1, path); });
+        return;
+      }
+      var name = pick(o,"playerName","scorer","playerNameKo","name","player");
+      var time = pick(o,"time","minute","eventTime","recordTime","displayTime","gameTime","scoreTime");
+      var type = String(pick(o,"eventType","type","recordType","goalType") || "");
+      var goalish = /goal|득점/i.test(type) || /goal|득점|score/i.test(path);
+      if(typeof name === "string" && name && time !== null && goalish){
+        var raw = String(pick(o,"homeAway","teamType","side") || path || "");
+        out.push({ side: /away|원정/i.test(raw) ? "away" : "home", name:name, time:String(time) });
+        return;
+      }
+      Object.keys(o).forEach(function(k){ walk(o[k], depth+1, path + "/" + k); });
+    })(root, 0, "");
+
+    var seen = {}, uniq = [];
+    out.forEach(function(g){
+      var k = g.side + "|" + g.name + "|" + g.time;
+      if(!seen[k]){ seen[k] = 1; uniq.push(g); }
+    });
+    return uniq.sort(function(a,b){ return parseInt(a.time,10) - parseInt(b.time,10); });
+  }
+
+  function lineBlock(ls, awayName, homeName){
+    var len = Math.max(ls.away.inn.length, ls.home.inn.length);
+    var head = '<tr><th style="text-align:left">팀명</th>';
+    for(var i=1;i<=len;i++) head += '<th>' + i + '</th>';
+    ["R","H","E","B"].forEach(function(x, i){
+      head += '<th class="tot' + (i === 0 ? " sep" : "") + '">' + x + '</th>';
+    });
+    function row(name, s){
+      var tds = "";
+      for(var i=0;i<len;i++) tds += '<td>' + esc(s.inn[i] === undefined ? "-" : s.inn[i]) + '</td>';
+      ["r","h","e","b"].forEach(function(k, i){
+        tds += '<td class="tot' + (k === "r" ? " r sep" : "") + '">'
+             + esc(s[k] === null ? "-" : s[k]) + '</td>';
+      });
+      return '<tr><td class="team">' + esc(name) + '</td>' + tds + '</tr>';
+    }
+    return '<table class="line">' + head + '</tr>'
+      + row(awayName || "원정", ls.away) + row(homeName || "홈", ls.home) + '</table>';
+  }
+
+  function goalsBlock(goals, sport){
+    var left = sideOrder(sport)[0];
+    return '<div class="goals">' + goals.map(function(g){
+      var tag = '<span class="min">' + esc(g.time) + "'" + '</span>';
+      return g.side === left
+        ? '<div class="g-a">' + esc(g.name) + ' ' + tag + '</div><div class="ball">⚽</div><div></div>'
+        : '<div></div><div class="ball">⚽</div><div class="g-h">' + tag + ' ' + esc(g.name) + '</div>';
+    }).join("") + '</div>';
+  }
+
+  /* home/away 짝을 이루는 후보를 전부 모은 뒤, 아는 항목이 가장 많은 것을 고른다.
+     이렇게 하지 않으면 시즌 순위표(awayStandings/homeStandings)가 먼저 걸려든다. */
+  function findPairedStats(root, sport){
+    var def = STAT_DEF[sport] || { order:[], label:{} };
+    function isPlain(v){ return v && typeof v === "object" && !Array.isArray(v); }
+    var cands = [];
+
+    (function walk(o, depth){
+      if(!o || typeof o !== "object" || depth > 7) return;
+      var keys = Object.keys(o);
+      var hk = keys.filter(function(k){ return /home/i.test(k) && isPlain(o[k]); })[0];
+      var ak = keys.filter(function(k){ return /away/i.test(k) && isPlain(o[k]); })[0];
+
+      if(hk && ak && !/standing|rank|season|pitcher|batter|lineup/i.test(hk + ak)){
+        var rows = [], known = 0;
+        Object.keys(o[hk]).forEach(function(k){
+          if(def.hide && def.hide.indexOf(norm(k)) > -1) return;
+          var hv = o[hk][k], av = o[ak][k];
+          if(hv === undefined || av === undefined) return;
+          if(typeof hv === "object" || typeof av === "object") return;
+          var hn = parseFloat(hv), an = parseFloat(av);
+          if(isNaN(hn) || isNaN(an)) return;
+          var lbl = def.label[norm(k)];
+          if(lbl) known++;
+          rows.push({ key:k, label:lbl || k, home:hn, away:an, known:!!lbl });
+        });
+        if(rows.length >= 3) cands.push({ rows:rows, homeKey:hk, awayKey:ak, score:known });
+      }
+      keys.forEach(function(k){ if(o[k] && typeof o[k] === "object") walk(o[k], depth+1); });
+    })(root, 0);
+
+    if(!cands.length) return null;
+    cands.sort(function(a,b){ return b.score - a.score; });
+    var best = cands[0];
+    if(best.score === 0) return null;   /* 아는 항목이 하나도 없으면 다른 표로 본다 */
+
+    var rank = {};
+    def.order.forEach(function(l,i){ rank[l] = i; });
+
+    best.allRows = best.rows.filter(function(r){ return r.known; });
+
+    /* 네이버 순서대로 먼저, 이름을 못 붙인 항목은 뒤에 그대로 남긴다.
+       모르는 키를 버리면 병살·퇴장처럼 소리 없이 사라진다. */
+    var knownRows = best.allRows
+      .filter(function(r){ return rank[r.label] !== undefined; })
+      .sort(function(a,b){ return rank[a.label] - rank[b.label]; });
+    var otherRows = best.rows.filter(function(r){ return !r.known; });
+
+    best.rows = knownRows.concat(otherRows);
+    best.unnamed = otherRows.length;
+
+    return best.rows.length ? best : null;
+  }
+
+  function fmtNum(n, label){
+    var s = (Math.round(n * 10) / 10).toString();
+    return PCT[label] ? s + "%" : s;
+  }
+
+  /* 축구는 네이버처럼 홈이 왼쪽, 야구는 원정이 왼쪽 */
+  function sideOrder(sport){ return sport === "kfoot" ? ["home","away"] : ["away","home"]; }
+
+  /* R·H·E·B 합계는 이닝 배열 바깥에 따로 있는 경우가 많아 별도로 찾는다 */
+  function findTotals(root){
+    var MAP = { r:"r", run:"r", runs:"r", score:"r", 득점:"r",
+                h:"h", hit:"h", hits:"h", 안타:"h",
+                e:"e", error:"e", errors:"e", err:"e", 실책:"e",
+                b:"b", bb:"b", fourball:"b", walk:"b", walks:"b",
+                baseonballs:"b", 볼넷:"b" };
+    function grab(o){
+      if(!o || typeof o !== "object" || Array.isArray(o)) return null;
+      var out = {}, n = 0;
+      Object.keys(o).forEach(function(k){
+        var slot = MAP[norm(k)];
+        if(!slot || out[slot] !== undefined) return;
+        var v = parseInt(o[k], 10);
+        if(isNaN(v)) return;
+        out[slot] = v; n++;
+      });
+      return n >= 3 ? out : null;
+    }
+    var res = null;
+    (function walk(o, depth){
+      if(res || !o || typeof o !== "object" || depth > 7) return;
+      var keys = Object.keys(o);
+      var ak = keys.filter(function(k){ return /away/i.test(k); })[0];
+      var hk = keys.filter(function(k){ return /home/i.test(k); })[0];
+      if(ak && hk && !/standing|rank|season/i.test(ak + hk)){
+        var a = grab(o[ak]), h = grab(o[hk]);
+        if(a && h){ res = { away:a, home:h }; return; }
+      }
+      keys.forEach(function(k){ if(!res && o[k] && typeof o[k] === "object") walk(o[k], depth+1); });
+    })(root, 0);
+    return res;
+  }
+
+  /* R은 이닝 합으로도 구할 수 있고, H·E·B는 합계표나 팀 기록에서 메운다 */
+  function fillTotals(ls, st, tot){
+    function sum(inn){
+      var t = 0, any = false;
+      inn.forEach(function(x){ var n = parseInt(x,10); if(!isNaN(n)){ t += n; any = true; } });
+      return any ? t : null;
+    }
+    function fromStats(label, side){
+      if(!st || !st.allRows) return null;
+      var row = st.allRows.filter(function(r){ return r.label === label; })[0];
+      return row ? row[side] : null;
+    }
+    ["away","home"].forEach(function(side){
+      var t = tot ? tot[side] : null;
+      if(ls[side].r === null && t && t.r !== undefined) ls[side].r = t.r;
+      if(ls[side].h === null && t && t.h !== undefined) ls[side].h = t.h;
+      if(ls[side].e === null && t && t.e !== undefined) ls[side].e = t.e;
+      if(ls[side].b === null && t && t.b !== undefined) ls[side].b = t.b;
+
+      if(ls[side].h === null) ls[side].h = fromStats("안타", side);
+      if(ls[side].e === null) ls[side].e = fromStats("실책", side);
+      if(ls[side].b === null) ls[side].b = fromStats("볼넷", side);
+      if(ls[side].r === null) ls[side].r = sum(ls[side].inn);
+    });
+  }
+
+  function cmpBlock(found, g){
+    var ord = sideOrder(g.sport), L = ord[0], R = ord[1];
+
+    /* 막대는 표 전체에 하나의 눈금을 쓴다. 행마다 따로 재면
+       같은 값이 행에 따라 다른 길이로 나온다(코너킥 6 vs 슈팅 6). */
+    var maxCount = 0;
+    found.rows.forEach(function(r){
+      if(PCT[r.label]) return;                 /* 퍼센트 항목은 100 기준으로 따로 */
+      maxCount = Math.max(maxCount, r.home, r.away);
+    });
+    if(!maxCount) maxCount = 1;
+
+    function width(v, label){
+      if(!(v > 0)) return 0;
+      var pct = PCT[label] ? v : (v / maxCount * 100);
+      return Math.max(Math.min(pct, 100), 2).toFixed(1);   /* 작은 값도 보이게 */
+    }
+
+    var head = '<div class="cmp-head"><span class="a">' + esc(g[L] || (L === "home" ? "홈" : "원정")) + '</span>'
+             + '<span class="c">항목</span><span>' + esc(g[R] || (R === "home" ? "홈" : "원정")) + '</span></div>';
+    var rows = found.rows.map(function(r){
+      var lv = r[L], rv = r[R];
+      return '<div class="cmp-row">'
+        + '<span class="v r">' + fmtNum(lv, r.label) + '</span>'
+        + '<span class="bar l"><i style="width:' + width(lv, r.label) + '%"></i></span>'
+        + '<span class="lbl' + (r.known ? "" : " unk") + '">' + esc(r.label) + '</span>'
+        + '<span class="bar"><i style="width:' + width(rv, r.label) + '%"></i></span>'
+        + '<span class="v">' + fmtNum(rv, r.label) + '</span></div>';
+    }).join("");
+    return head + '<div class="cmp">' + rows + '</div>'
+      + '<div class="srcnote">왼쪽 ← ' + esc(L === "home" ? found.homeKey : found.awayKey)
+      + ' &nbsp;·&nbsp; ' + esc(R === "home" ? found.homeKey : found.awayKey) + ' → 오른쪽'
+      + (found.unnamed ? '<br>회색 항목은 아직 한글 이름을 못 붙인 키입니다' : '')
+      + '</div>';
+  }
+
+  function modalHead(g){
+    var done = (g.state === "done" || g.state === "live")
+            && g.homeScore !== null && g.awayScore !== null;
+    var subs = { away:"", home:"" };
+
+    /* 승/패 투수는 목록 응답에 이미 있다. 팀 귀속은 점수로 판단한다. */
+    if(g.sport === "kbo"){
+      if(g.state === "done" && done && g.awayScore !== g.homeScore && (g.winPitcher || g.losePitcher)){
+        var awayWon = g.awayScore > g.homeScore;
+        subs.away = awayWon ? (g.winPitcher ? "승 <b>" + esc(g.winPitcher) + "</b>" : "")
+                            : (g.losePitcher ? "패 <b>" + esc(g.losePitcher) + "</b>" : "");
+        subs.home = awayWon ? (g.losePitcher ? "패 <b>" + esc(g.losePitcher) + "</b>" : "")
+                            : (g.winPitcher ? "승 <b>" + esc(g.winPitcher) + "</b>" : "");
+      } else if(g.state === "before"){
+        if(g.awayStarter) subs.away = "선발 <b>" + esc(g.awayStarter) + "</b>";
+        if(g.homeStarter) subs.home = "선발 <b>" + esc(g.homeStarter) + "</b>";
+      }
+    }
+
+    var ord = sideOrder(g.sport);
+    function team(side, cls){
+      return '<div class="' + cls + '"><div class="tname">' + esc(g[side] || "?")
+        + (side === "home" ? ' <span class="home-dot">HOME</span>' : '') + '</div>'
+        + (subs[side] ? '<div class="tsub">' + subs[side] + '</div>' : '') + '</div>';
+    }
+    function score(side){
+      var other = side === "home" ? "away" : "home";
+      var lost = done && g[side + "Score"] < g[other + "Score"];
+      return '<div class="mnum' + (lost ? " lost" : "") + '">' + (done ? g[side + "Score"] : "") + '</div>';
+    }
+
+    var sub = [g.league, g.time, g.stadium,
+               g.state === "done" ? "경기종료" : (g.note || "")]
+              .filter(Boolean).map(esc).join(" · ");
+
+    return '<div class="modal-head"><div style="flex:1">'
+      + '<div class="mscore">'
+      +   team(ord[0], "lft") + score(ord[0])
+      +   '<div class="mcolon">' + (done ? ":" : "vs") + '</div>'
+      +   score(ord[1]) + team(ord[1], "rgt")
+      + '</div>'
+      + '<div class="sub" style="margin-top:12px">' + sub + '</div>'
+      + '</div></div>';
+  }
+
+  /* 후보 엔드포인트를 순서대로 두드려, 읽어낼 게 나오면 멈춘다 */
+  function fetchDetail(g, i, bag){
+    var paths = DETAIL_PATHS[g.sport] || ["record"];
+    if(i >= paths.length) return Promise.resolve(bag);
+    var url = "https://api-gw.sports.naver.com/schedule/games/"
+            + encodeURIComponent(g.id) + "/" + paths[i];
+    return fetchJSON(url).then(function(data){
+      bag.push({ path:paths[i], data:data });
+      var root = (data && data.result) || data;
+      if(findLineScore(root) || findGoals(root).length || findPairedStats(root, g.sport)) return bag;
+      return fetchDetail(g, i+1, bag);
+    }).catch(function(){ return fetchDetail(g, i+1, bag); });
+  }
+
+  function openModal(g){
+    var naverUrl = "https://m.sports.naver.com/game/" + encodeURIComponent(g.id || "") + "/record";
+    $("modal").innerHTML = modalHead(g)
+      + '<div id="detailBody"><div class="note-line">상세 기록 불러오는 중…</div></div>'
+      + '<div class="modal-foot">'
+      + '<a href="' + naverUrl + '" target="_blank" rel="noopener">네이버에서 보기</a>'
+      + '<span class="spacer"></span><button id="closeModal">닫기</button></div>';
+
+    $("backdrop").hidden = false;
+    $("closeModal").onclick = closeModal;
+    $("closeModal").focus();
+
+    if(!g.id){
+      $("detailBody").innerHTML = '<div class="note-line">경기 ID가 없어 상세를 조회할 수 없습니다.</div>'
+        + rawBlock(g.raw);
+      return;
+    }
+
+    fetchDetail(g, 0, []).then(function(bag){
+      var body = "", haveLine = false, haveGoals = false, haveStats = false;
+
+      bag.forEach(function(b){
+        var root = (b.data && b.data.result) || b.data;
+        var st = haveStats ? null : findPairedStats(root, g.sport);
+
+        if(!haveLine){
+          var ls = findLineScore(root);
+          if(ls){
+            fillTotals(ls, st, findTotals(root));
+            body += '<h4>이닝별 점수</h4>' + lineBlock(ls, g.away, g.home);
+            haveLine = true;
+          }
+        }
+        if(!haveGoals){
+          var gs = findGoals(root);
+          if(gs.length){ body += '<h4>득점</h4>' + goalsBlock(gs, g.sport); haveGoals = true; }
+        }
+        if(st){ body += '<h4>팀 기록</h4>' + cmpBlock(st, g); haveStats = true; }
+      });
+
+      if(!body){
+        body = '<h4>상세 기록</h4><div class="note-line">'
+             + (bag.length ? '자동 인식에 실패했습니다. 아래 원본 구조를 알려주시면 정확히 맞춰 드립니다.'
+                           : '상세 API에서 응답을 받지 못했습니다.') + '</div>';
+      }
+      $("detailBody").innerHTML = body
+        + rawBlock(bag.length ? bag.map(function(b){ return { endpoint:b.path, body:b.data }; }) : g.raw);
+    });
+  }
+
+  function rawBlock(obj){
+    var txt = "";
+    try { txt = JSON.stringify(obj, null, 2); } catch(e){ txt = String(obj); }
+    if(txt.length > 60000) txt = txt.slice(0,60000) + "\n… (생략)";
+    var id = "raw" + Math.random().toString(36).slice(2,8);
+    setTimeout(function(){
+      var b = document.getElementById(id);
+      if(!b) return;
+      b.onclick = function(e){
+        e.preventDefault();
+        navigator.clipboard.writeText(txt).then(function(){
+          b.textContent = "복사됨";
+          setTimeout(function(){ b.textContent = "복사"; }, 1500);
+        }).catch(function(){ b.textContent = "복사 실패"; });
+      };
+    }, 0);
+    return '<details class="raw"><summary>원본 데이터 보기'
+      + '<button class="copybtn" id="' + id + '">복사</button></summary>'
+      + '<pre>' + esc(txt) + '</pre></details>';
+  }
+
+  function closeModal(){ $("backdrop").hidden = true; }
+  $("backdrop").addEventListener("click", function(e){ if(e.target === $("backdrop")) closeModal(); });
+
+  /* ══════════ 실패 화면 ══════════ */
+  function renderFailure(el, sport){
+    var link = sport === "kbo"
+      ? "https://m.sports.naver.com/kbaseball/schedule/index"
+      : "https://m.sports.naver.com/kfootball/schedule/index";
+    var seen = {}, rows = "";
+    diag.forEach(function(d){
+      if(seen[d.route]) return;
+      seen[d.route] = 1;
+      rows += '<tr><td>' + esc(d.route) + '</td><td>' + esc(d.msg) + '</td></tr>';
+    });
+    el.innerHTML = '<div class="fail"><h3>네이버 데이터를 못 가져왔습니다</h3>'
+      + '<p>시도한 경로와 실패 사유입니다. 전부 “차단됨”이면 이 페이지가 열린 위치가 원인일 수 있습니다 — '
+      + '파일을 내려받아 브라우저에서 직접 열면 결과가 달라집니다.</p>'
+      + (rows ? '<table class="diag">' + rows + '</table>' : "")
+      + '<a href="' + link + '" target="_blank" rel="noopener">네이버 스포츠 일정 열기</a></div>';
+  }
+
+  /* ══════════ 상태 ══════════ */
+  var current = new Date(), timer = null, level = "all";
+  var cache = { kbo:[], kfoot:[] };
+
+  function paintHeader(){
+    var today = ymd(new Date()), sel = ymd(current);
+    $("dateBig").textContent = sel.slice(5).replace("-",".");
+    $("dateDow").textContent = DOW[current.getDay()] + "요일";
+    $("dateTag").hidden = (sel !== today);
+    $("btnToday").setAttribute("aria-pressed", String(sel === today));
+  }
+
+  function paintFootball(){
+    var games = cache.kfoot.filter(function(g){ return level === "all" || g.level === level; });
+    renderColumn($("kfoot"), games);
+  }
+
+  function refresh(){
+    paintHeader();
+    var dateKey = ymd(current).replace(/-/g,"");
+    $("updated").textContent = "불러오는 중";
+    diag = [];
+
+    Promise.all(["kbo","kfoot"].map(function(s){
+      return load(s, current).catch(function(e){ return { error:true, sport:s }; });
+    })).then(function(results){
+      var all = [], onDateAll = [], anyLive = false, anyOk = false;
+
+      ["kbo","kfoot"].forEach(function(sport, i){
+        var r = results[i], el = $(sport);
+        if(r && r.error){ renderFailure(el, sport); cache[sport] = []; return; }
+        anyOk = true;
+        all = all.concat(r);
+        var onDate = r.filter(function(g){ return g.date === dateKey; });
+        onDate.forEach(function(g){ if(g.state === "live") anyLive = true; });
+        onDateAll = onDateAll.concat(onDate);
+        cache[sport] = onDate;
+      });
+
+      if(!anyOk){ $("pins").innerHTML = ""; return; }
+
+      renderPins(all, dateKey);
+      renderColumn($("kbo"), cache.kbo);
+      paintFootball();
+      drawMap(onDateAll);
+      loadWeather(onDateAll).then(function(){
+        renderColumn($("kbo"), cache.kbo);   /* 날씨 칩을 붙여 다시 그린다 */
+        paintFootball();
+      });
+
+      var now = new Date();
+      $("updated").textContent = "갱신 " + String(now.getHours()).padStart(2,"0")
+        + ":" + String(now.getMinutes()).padStart(2,"0");
+      clearTimeout(timer);
+      timer = setTimeout(refresh, anyLive ? 60000 : 300000);
+    });
+  }
+
+  /* ══════════ 이벤트 ══════════ */
+  $("btnPrev").onclick    = function(){ current = shift(current,-1); refresh(); };
+  $("btnNext").onclick    = function(){ current = shift(current, 1); refresh(); };
+  $("btnToday").onclick   = function(){ current = new Date(); refresh(); };
+  $("btnRefresh").onclick = function(){ refresh(); };
+
+  $("leagueSeg").addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    level = b.dataset.lv;
+    Array.prototype.forEach.call(this.querySelectorAll("button"), function(x){
+      x.setAttribute("aria-pressed", String(x === b));
+    });
+    paintFootball();
+  });
+
+  document.querySelector(".board").addEventListener("click", function(e){
+    var un = e.target.closest("[data-unnamed]");
+    if(un){
+      var list = $(un.dataset.unnamed)._unnamed || [];
+      $("modal").innerHTML = '<div class="modal-head"><div class="teams">'
+        + '<div class="matchup">이름을 못 읽은 경기</div>'
+        + '<div class="sub">네이버가 팀 이름 필드를 비워 보낸 항목입니다</div></div></div>'
+        + rawBlock(list.map(function(x){ return x.raw; }))
+        + '<div class="modal-foot"><span class="spacer"></span><button id="closeModal">닫기</button></div>';
+      $("backdrop").hidden = false;
+      $("closeModal").onclick = closeModal;
+      return;
+    }
+    var card = e.target.closest(".game");
+    if(!card) return;
+    var pool = cache[card.dataset.sport] || [];
+    var g = pool.filter(function(x){ return String(x.id) === card.dataset.gid; })[0];
+    if(g) openModal(g);
+  });
+
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape" && !$("backdrop").hidden){ closeModal(); return; }
+    if(!$("backdrop").hidden || e.target.tagName === "INPUT") return;
+    if(e.key === "ArrowLeft")  $("btnPrev").click();
+    if(e.key === "ArrowRight") $("btnNext").click();
+    if(e.key === "r" || e.key === "ㄱ") refresh();
+  });
+
+  document.addEventListener("visibilitychange", function(){ if(!document.hidden) refresh(); });
+
+  refresh();
+})();
+</script>
+</body>
+</html>
