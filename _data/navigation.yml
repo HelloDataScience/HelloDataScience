@@ -1,3 +1,21 @@
+# _data/navigation.yml
+#
+# minimal-mistakes 상단 메뉴(masthead). 테마가 site.data.navigation.main 을 읽어갑니다.
+# url 은 도메인을 빼고 슬래시로 시작하는 경로만 적습니다 —
+# 테마가 relative_url 필터를 붙여주므로 전체 주소를 쓰면 오히려 어긋납니다.
+
 main:
-  - title: "오늘의 경기 결과"
+  - title: "홈"
+    url: /
+
+  - title: "오늘의 경기"
     url: /sports/
+
+# 나중에 항목을 늘릴 때는, 그 경로에 실제 페이지가 있어야 합니다.
+# 없는 곳을 가리키면 메뉴는 보이지만 눌렀을 때 404가 납니다.
+#
+#  - title: "글 목록"
+#    url: /posts/
+#
+#  - title: "소개"
+#    url: /about/
