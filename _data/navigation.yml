@@ -1,0 +1,3 @@
+main:
+  - title: "오늘의 경기 결과"
+    url: /sports/
