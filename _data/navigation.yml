@@ -8,6 +8,9 @@ main:
   - title: "홈"
     url: /
 
+  - title: "이력서"
+    url: /resume/
+    
   - title: "오늘의 경기"
     url: /sports/
 
