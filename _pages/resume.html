@@ -261,7 +261,23 @@ textarea.input { min-height: 90px; resize: vertical; }
 .dialog-body { font-size: 14px; opacity: 0.85; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
 
+/* — resume content — */
+.resume-content h1 { font-size: 32px; margin: 0 0 4px; }
+.resume-content h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-accent); margin: 14px 0 8px; }
+.header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 12px; }
+.photo-placeholder { width: 80px; height: 100px; flex: none; background: repeating-linear-gradient(45deg, var(--color-divider) 0 2px, transparent 2px 8px); display: flex; align-items: center; justify-content: center; font-family: monospace; font-size: 9px; color: var(--color-text); text-align: center; border: 4px solid var(--color-surface); outline: 1px solid var(--color-divider); }
+.section { display: flex; gap: 16px; margin-bottom: 12px; }
+.section-label { width: 90px; flex: none; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-accent); font-family: var(--font-heading); font-weight: 600; }
+.section-content { flex: 1; }
+.section-content ul { margin: 0; padding: 0; list-style: none; }
+.section-content li { font-size: 12px; line-height: 1.5; margin-bottom: 3px; padding-left: 12px; position: relative; }
+.section-content li:before { content: '—'; position: absolute; left: 0; color: var(--color-accent); }
 
+}
+
+@media print {
+  .masthead, .sidebar, .page__footer, .resume-tabs { display: none !important; }
+  .page { box-shadow: none; }
 }
 
 .resume-container { max-width: 900px; margin: 0 auto; }
@@ -275,7 +291,7 @@ textarea.input { min-height: 90px; resize: vertical; }
 @media (max-width: 768px) { .page { padding: 32px; } }
 </style>
 
-<div class="resume-container">
+<div class="resume-container classical-frame">
   <div class="resume-tabs">
     <button class="active" onclick="switchResume('ko')">한국어</button>
     <button onclick="switchResume('en')">English</button>
@@ -283,11 +299,235 @@ textarea.input { min-height: 90px; resize: vertical; }
   </div>
 
   <div id="ko" class="resume-content active">
+    <div class="page">
+      <div class="header-row">
+        <div>
+          <h1>나성호</h1>
+          <span class="tag tag-accent">헬로데이터사이언스 대표</span>
+        </div>
+        <div class="photo-placeholder">사진</div>
+      </div>
 
+      <div class="hr"></div>
+
+      <div class="section">
+        <div class="section-label">약력</div>
+        <div class="section-content">
+          <ul>
+            <li>생년월일: 1974. 09. 26(양)</li>
+            <li>주소: 서울특별시</li>
+            <li>이메일: hellodatasciencekorea@gmail.com</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>학력</h2>
+      <div class="section">
+        <div class="section-label"></div>
+        <div class="section-content">
+          <ul>
+            <li>한양대학교 일반대학원 경영학과 MIS 전공 박사과정 수료('18.03~'21.02)</li>
+            <li>서울대학교 일반대학원 경영학과 마케팅 전공 경영학 석사('00.03~'02.08)</li>
+            <li>스위스 생갈렌대학교 MBA 과정 교환학생 수료('01.09~'01.12)</li>
+            <li>고려대학교 자연자원대학 식량자원학과 학사('93.03~'00.02)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>직장경력</h2>
+      <div class="section">
+        <div class="section-label"></div>
+        <div class="section-content">
+          <ul>
+            <li>헬로데이터사이언스 대표('19.09~현재)</li>
+            <li>IGM 세계경영연구원 겸임교수('22.07~현재)</li>
+            <li>aSSIST MBA 객원교수('21.09~현재)</li>
+            <li>패스트캠퍼스 전임강사('19.04~'20.03)</li>
+            <li>하나금융경영연구소 금융경영팀 연구위원('13.12~'19.02)</li>
+            <li>하나 SK 카드 마케팅전략팀 차장('10.06~'13.12)</li>
+            <li>현대캐피탈 Auto Resale 팀 과장('09.10~'10.05)</li>
+            <li>삼성화재 개인마케팅팀 CRM 파트 대리, 지점장('02.07~'09.10)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>교육 및 자격</h2>
+      <div class="section">
+        <div class="section-label"></div>
+        <div class="section-content">
+          <ul>
+            <li>한국데이터산업진흥원 데이터 거래 중개 전문가 2기 수료('21.09~11)</li>
+            <li>패스트캠퍼스 R을 활용한 텍스트 마이닝 과정 수료('17.06~08)</li>
+            <li>패스트캠퍼스 Python을 활용한 금융데이터 수집 및 분석자동화 과정 수료('17.02~04)</li>
+            <li>서울대학교 빅데이터 아카데미 2기 인사이트 과정 수료('16.06~07)</li>
+            <li>정보화진흥원 빅데이터 분석을 통한 정책이슈 발굴 자문위원('15.10~12)</li>
+            <li>데이터진흥원 빅데이터 아카데미 분석전문가 5기 수료('14.03~05)</li>
+            <li>삼성 SDS e-Test Professional 1급('02.08), 삼성화재 6시그마 GB('07.04)</li>
+            <li>SAS Programming 과정 수료, The SAS Institute('02.09)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="page">
+      <h2>수상</h2>
+      <div class="section">
+        <div class="section-label"></div>
+        <div class="section-content">
+          <ul>
+            <li>서울대학교 빅데이터 아카데미 2기 인사이트 과정 프로젝트 금상('16.07)</li>
+            <li>데이터진흥원 빅데이터 아카데미 분석전문가 5기 프로젝트 최우수팀('14.05), 2014년 연말 프로젝트 사례 발표회 우수상('14.12)</li>
+            <li>하나금융경영연구소 제1회 콜라보 어워드 수상('18.07)</li>
+            <li>하나금융경영연구소 이달의 연구원상 2회 수상('14.08, '17.10)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h2>출판</h2>
+      <div class="section">
+        <div class="section-label"></div>
+        <div class="section-content">
+          <ul>
+            <li>"나성호의 R 데이터 분석 입문", 골든래빗('21.10)</li>
+            <li>"포워드 2019 미래를 읽다", 한스미디어 공저('18.11)</li>
+            <li>"효율적인 R 프로그래밍", 느린생각 번역팀('18.06)</li>
+            <li>"CRM을 이끄는 세계적 기업 21", 서울대 DBM Lab 공저('02)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>기술 및 기타</h2>
+      <div class="section">
+        <div class="section-label"></div>
+        <div class="section-content">
+          <ul>
+            <li>프로그래밍: Python(상), R(상), SAS(중), SQL(중)</li>
+            <li>컴퓨터활용: MS 오피스(엑셀/파워포인트/워드) 및 한글(상)</li>
+            <li>삼성그룹 신입입문과정 자치회장('02.07)</li>
+            <li>서울대학교 대학원 경영학과 자치회장('00.07~'01.06)</li>
+            <li>병역: 육군 만기 제대('96.01~'98.03)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="en" class="resume-content">
+    <div class="page">
+      <div class="header-row">
+        <div>
+          <h1>Seongho Na</h1>
+          <span class="tag tag-accent">CEO, Hello Data Science</span>
+        </div>
+        <div class="photo-placeholder">photo</div>
+      </div>
 
+      <div class="hr"></div>
+
+      <div class="section">
+        <div class="section-label">Profile</div>
+        <div class="section-content">
+          <ul>
+            <li>Date of Birth: September 26, 1974</li>
+            <li>Address: Seoul, South Korea</li>
+            <li>Email: hellodatasciencekorea@gmail.com</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>Education</h2>
+      <div class="section">
+        <div class="section-label"></div>
+        <div class="section-content">
+          <ul>
+            <li>Ph.D. Coursework, Management Information Systems, Hanyang University (2018–2021)</li>
+            <li>Master of Business Administration, Marketing, Seoul National University (2000–2002)</li>
+            <li>Exchange Student, MBA Program, University of St. Gallen, Switzerland (2001)</li>
+            <li>Bachelor of Science, Food Resources, Korea University (1993–2000)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>Professional Experience</h2>
+      <div class="section">
+        <div class="section-label"></div>
+        <div class="section-content">
+          <ul>
+            <li>CEO, Hello Data Science (2019–Present)</li>
+            <li>Adjunct Professor, IGM Global Management Institute (2022–Present)</li>
+            <li>Visiting Professor, aSSIST MBA (2021–Present)</li>
+            <li>Full-time Instructor, FastCampus (2019–2020)</li>
+            <li>Research Fellow, Hana Financial Research Institute (2013–2019)</li>
+            <li>Senior Manager, Marketing Strategy, Hana SK Card (2010–2013)</li>
+            <li>Manager, Auto Resale Team, Hyundai Capital (2009–2010)</li>
+            <li>Senior Specialist, CRM, Samsung Fire & Marine Insurance (2002–2009)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>Training & Certifications</h2>
+      <div class="section">
+        <div class="section-label"></div>
+        <div class="section-content">
+          <ul>
+            <li>Data Trading Broker Specialist (2기), Korean Data Industry Promotion Agency (2021)</li>
+            <li>Text Mining with R, FastCampus (2017)</li>
+            <li>Financial Data Collection & Analysis Automation with Python, FastCampus (2017)</li>
+            <li>Big Data Academy Insight Program (2기), Seoul National University (2016)</li>
+            <li>Big Data Analysis for Policy Issues, Information and Communication Technology Promotion Agency (2015)</li>
+            <li>Big Data Academy Analyst Program (5기), Data Industry Promotion Agency (2014)</li>
+            <li>Samsung SDS e-Test Professional (2002), Six Sigma Green Belt, Samsung Fire & Marine Insurance (2007)</li>
+            <li>SAS Programming Course, The SAS Institute (2002)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="page">
+      <h2>Awards & Recognition</h2>
+      <div class="section">
+        <div class="section-label"></div>
+        <div class="section-content">
+          <ul>
+            <li>Gold Award, Big Data Academy Insight Program, Seoul National University (2016)</li>
+            <li>Outstanding Team Award, Big Data Academy Analyst Program, Data Industry Promotion Agency (2014); Award of Excellence, Annual Project Showcase (2014)</li>
+            <li>First Collaboration Award, Hana Financial Research Institute (2018)</li>
+            <li>Researcher of the Month, Hana Financial Research Institute (2014, 2017)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h2>Publications</h2>
+      <div class="section">
+        <div class="section-label"></div>
+        <div class="section-content">
+          <ul>
+            <li>"Introduction to R Data Analysis", Golden Rabbit (2021)</li>
+            <li>"Forward 2019: Reading the Future", Hans Media, Co-author (2018)</li>
+            <li>"Efficient R Programming", Slow Thinking Translation Team (2018)</li>
+            <li>"21 Leading CRM Companies Worldwide", Seoul National University DBM Lab, Co-author (2002)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>Technical Skills & Interests</h2>
+      <div class="section">
+        <div class="section-label"></div>
+        <div class="section-content">
+          <ul>
+            <li>Programming Languages: Python (Advanced), R (Advanced), SAS (Intermediate), SQL (Intermediate)</li>
+            <li>Software: Microsoft Office (Excel, PowerPoint, Word), HWP (Advanced)</li>
+            <li>Class Representative, Samsung Group New Employee Training Program (2002)</li>
+            <li>President, Graduate School of Business Administration, Seoul National University (2000–2001)</li>
+            <li>Military Service: Korean Army, Honorable Discharge (1996–1998)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
