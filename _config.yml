@@ -35,6 +35,9 @@ author:
     - label: "Email"
       icon: "fas fa-fw fa-envelope"
       url: "mailto:hellodatasciencekorea@gmail.com"
+    - label: "이력서"
+      icon: "fas fa-fw fa-file-lines"
+      url: "/resume/"
 
 # ===== 모든 글에 적용될 기본값 =====
 defaults:
