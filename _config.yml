@@ -15,10 +15,19 @@ plugins:
   - jekyll-sitemap
   - jekyll-paginate
 
+# _pages 폴더 안의 파일들을 실제 페이지로 빌드하기 위한 설정.
+# 이게 없으면 _pages/resume.html 같은 파일은 Jekyll이 무시해서 404가 납니다.
+collections:
+  pages:
+    output: true
+    permalink: /:path/
+
 # ===== 작성자 프로필 (사이드바) =====
+# home: 사이드바의 이름(나성호)을 클릭했을 때 이동할 주소
 author:
   name: "나성호 (Seongho Na)"
   bio: "데이터 사이언스 강사<br>헬로데이터사이언스 대표"
+  home: /resume/
   links:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
