@@ -35,7 +35,7 @@ author:
     - label: "Email"
       icon: "fas fa-fw fa-envelope"
       url: "mailto:hellodatasciencekorea@gmail.com"
-    - label: "이력서"
+    - label: "Resume"
       icon: "fas fa-fw fa-file-lines"
       url: "/resume/"
 
