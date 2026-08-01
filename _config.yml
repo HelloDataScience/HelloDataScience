@@ -38,7 +38,7 @@ author:
       url: "https://github.com/HelloDataScience"
     - label: "Email"
       icon: "fas fa-fw fa-envelope"
-      url: "mailto:hellodatasciencekorea@gmail.com"
+      url: "mailto:pyringual@hds.ai.kr"
     - label: "Resume"
       icon: "fas fa-fw fa-file-lines"
       url: "/resume/"
