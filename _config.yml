@@ -22,6 +22,10 @@ collections:
     output: true
     permalink: /:path/
 
+# docs/ 는 내부 운영 문서(예: sports 프록시 설정 노트)라 사이트에는 배포하지 않음
+exclude:
+  - docs
+
 # ===== 작성자 프로필 (사이드바) =====
 # home: 사이드바의 이름(나성호)을 클릭했을 때 이동할 주소
 author:
