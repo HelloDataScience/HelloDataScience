@@ -48,6 +48,8 @@ defaults:
       layout: single
       author_profile: true
       read_time: true
+      show_date: true
+      date_format: "%Y년 %m월 %d일"
       comments: false
       share: true
       related: true
