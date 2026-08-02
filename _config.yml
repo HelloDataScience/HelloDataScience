@@ -4,6 +4,13 @@ description: "Python·R 데이터 분석, 머신러닝, 딥러닝 강의 노트"
 url: "https://www.hds.ai.kr"
 locale: "ko-KR"
 
+# 상단 메뉴 왼쪽 로고. 로고 이미지 자체에 "헬로데이터사이언스 / HELLO DATA SCIENCE"
+# 글자가 이미 들어있어서, 옆에 "Hello Data Science" 텍스트가 중복 표시되지 않도록
+# masthead_title을 빈 값으로 비워둔다(완전히 빈 문자열이면 site.title로 대체되어버려서
+# 공백 하나를 넣어야 실제로 안 보인다).
+logo: "/assets/images/logo.jpg"
+masthead_title: " "
+
 # ===== 테마 (GitHub Pages는 remote_theme 방식) =====
 remote_theme: "mmistakes/minimal-mistakes@master"
 minimal_mistakes_skin: "default"
