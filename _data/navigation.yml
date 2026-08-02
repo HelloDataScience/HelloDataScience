@@ -8,9 +8,10 @@ main:
   - title: "Home"
     url: /
 
-  - title: "Today's Sports"
-    url: /sports/
-
+# Today's Sports는 데이터 분석 블로그 주제와 무관하고 AdSense 심사(발행자 콘텐츠
+# 없는 화면) 리스크가 있어 상단 메뉴에서 제외했다. 페이지 자체는 /sports/에 남아있고
+# _pages/sports.html에 noindex를 걸어뒀다.
+#
 # 나중에 항목을 늘릴 때는, 그 경로에 실제 페이지가 있어야 합니다.
 # 없는 곳을 가리키면 메뉴는 보이지만 눌렀을 때 404가 납니다.
 #
