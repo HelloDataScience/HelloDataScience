@@ -12,4 +12,8 @@
      !important 없이 캐스케이드로 덮어씀. -->
 <style>
   .site-logo img { max-height: 56px; }
+  /* 로고 원본 이미지(logo.jpg) 자체에 아이콘 왼쪽으로 내장 여백이 있어서(560px 기준 약 31px),
+     박스 위치는 사이드바 이름과 같아도 실제 아이콘은 그만큼 안쪽에서 시작해 밀려 보인다.
+     56px 높이로 스케일된 비율(31/560)만큼 왼쪽으로 당겨서 시각적으로 맞춘다. */
+  .site-logo img { margin-left: -12px; }
 </style>
