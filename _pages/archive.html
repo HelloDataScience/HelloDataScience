@@ -1,8 +1,22 @@
 ---
 title: "지난 R 강의 노트"
-layout: categories
+layout: single
 permalink: /archive/
 author_profile: true
 ---
 
-2018년에 R로 진행했던 강의 노트를 카테고리별로 모아뒀습니다.
+<p>2018년에 R로 진행했던 강의 노트를 카테고리별로 모아뒀습니다. 지금은 Python·생성형 AI 중심으로 글을 쓰고 있어서, 예전 R 자료는 이렇게 따로 모아둡니다.</p>
+
+{% assign r_posts = site.archive_r | sort: "date" %}
+{% assign grouped = r_posts | group_by_exp: "post", "post.categories[0]" %}
+{% for group in grouped %}
+<h2>{{ group.name }}</h2>
+<ul>
+  {% for post in group.items %}
+  <li>
+    <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+    <span style="color:#767676; font-size:0.85em;">&nbsp;({{ post.date | date: "%Y-%m" }})</span>
+  </li>
+  {% endfor %}
+</ul>
+{% endfor %}

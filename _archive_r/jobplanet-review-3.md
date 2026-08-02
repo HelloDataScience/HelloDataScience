@@ -1,6 +1,7 @@
 ---
 title: "텍스트 마이닝을 활용한 기업리뷰 분석"
 date: 2018-10-31
+redirect_from: /posts/jobplanet-review-3/
 last_modified_at: 2026-06-24
 categories:
   - 텍스트분석

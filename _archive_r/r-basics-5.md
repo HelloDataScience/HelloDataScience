@@ -1,6 +1,7 @@
 ---
 title: "탐색적 데이터 분석 (EDA)"
 date: 2018-03-27
+redirect_from: /posts/r-basics-5/
 last_modified_at: 2026-06-24
 categories:
   - R기초

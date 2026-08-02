@@ -1,6 +1,7 @@
 ---
 title: "외부 데이터 불러오기"
 date: 2018-03-20
+redirect_from: /posts/r-basics-4/
 last_modified_at: 2026-06-24
 categories:
   - R기초

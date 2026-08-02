@@ -1,6 +1,7 @@
 ---
 title: "기술 통계 간단 정리"
 date: 2018-03-16
+redirect_from: /posts/r-basics-3/
 last_modified_at: 2026-06-24
 categories:
   - R기초

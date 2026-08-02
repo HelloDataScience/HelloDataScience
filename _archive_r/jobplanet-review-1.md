@@ -1,6 +1,7 @@
 ---
 title: "기업리뷰 수집"
 date: 2018-10-25
+redirect_from: /posts/jobplanet-review-1/
 last_modified_at: 2026-06-24
 categories:
   - 텍스트분석

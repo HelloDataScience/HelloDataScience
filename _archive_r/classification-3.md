@@ -1,6 +1,7 @@
 ---
 title: "의사결정나무 (Decision Tree)"
 date: 2018-06-22
+redirect_from: /posts/classification-3/
 last_modified_at: 2026-06-24
 categories:
   - 머신러닝

@@ -1,6 +1,7 @@
 ---
 title: "R 객체(object)의 종류와 특징"
 date: 2018-01-02
+redirect_from: /posts/r-basics-1/
 last_modified_at: 2026-06-24
 categories:
   - R기초

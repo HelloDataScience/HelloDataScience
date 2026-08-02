@@ -1,6 +1,7 @@
 ---
 title: "기계학습 알고리즘의 종류와 데이터셋 분할"
 date: 2018-05-31
+redirect_from: /posts/machine-learning-overview-1/
 last_modified_at: 2026-06-24
 categories:
   - 머신러닝

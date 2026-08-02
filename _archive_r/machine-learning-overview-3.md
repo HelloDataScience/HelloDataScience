@@ -1,6 +1,7 @@
 ---
 title: "유사도의 척도, 거리의 종류"
 date: 2018-05-31
+redirect_from: /posts/machine-learning-overview-3/
 last_modified_at: 2026-06-24
 categories:
   - 머신러닝

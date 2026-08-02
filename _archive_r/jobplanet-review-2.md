@@ -1,6 +1,7 @@
 ---
 title: "탐색적 데이터 분석(EDA)과 추천모형 적합"
 date: 2018-10-29
+redirect_from: /posts/jobplanet-review-2/
 last_modified_at: 2026-06-24
 categories:
   - 텍스트분석

@@ -1,6 +1,7 @@
 ---
 title: "Google Map Api를 활용한 지도 시각화"
 date: 2018-05-03
+redirect_from: /posts/ggplot2-3/
 last_modified_at: 2026-06-24
 categories:
   - 데이터시각화

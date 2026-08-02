@@ -1,6 +1,7 @@
 ---
 title: "로지스틱 회귀분석 (Logistic Regression)"
 date: 2018-06-29
+redirect_from: /posts/classification-4/
 last_modified_at: 2026-06-24
 categories:
   - 머신러닝

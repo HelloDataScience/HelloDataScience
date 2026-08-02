@@ -1,6 +1,7 @@
 ---
 title: "분류모형의 성능 평가 기준"
 date: 2018-05-31
+redirect_from: /posts/machine-learning-overview-2/
 last_modified_at: 2026-06-24
 categories:
   - 머신러닝

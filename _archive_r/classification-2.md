@@ -1,6 +1,7 @@
 ---
 title: "나이브 베이즈 (Naive Bayes)"
 date: 2018-06-15
+redirect_from: /posts/classification-2/
 last_modified_at: 2026-06-24
 categories:
   - 머신러닝

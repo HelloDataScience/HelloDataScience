@@ -1,6 +1,7 @@
 ---
 title: "R 객체의 인덱싱과 슬라이싱"
 date: 2018-01-02
+redirect_from: /posts/r-basics-2/
 last_modified_at: 2026-06-24
 categories:
   - R기초

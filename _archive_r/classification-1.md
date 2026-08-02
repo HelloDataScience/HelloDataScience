@@ -1,6 +1,7 @@
 ---
 title: "K-근접이웃 (K-nearest neighbors)"
 date: 2018-06-01
+redirect_from: /posts/classification-1/
 last_modified_at: 2026-06-24
 categories:
   - 머신러닝

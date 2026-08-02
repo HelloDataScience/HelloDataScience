@@ -1,6 +1,7 @@
 ---
 title: "ggplot2 패키지를 활용한 시각화 2"
 date: 2018-04-25
+redirect_from: /posts/ggplot2-2/
 last_modified_at: 2026-06-24
 categories:
   - 데이터시각화
