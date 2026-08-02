@@ -50,6 +50,13 @@ author:
       icon: "fas fa-fw fa-file-lines"
       url: "/resume/"
 
+# ===== 사이트 푸터 =====
+footer:
+  links:
+    - label: "개인정보처리방침"
+      icon: "fas fa-fw fa-link"
+      url: "/privacy-policy/"
+
 # ===== 댓글 (Disqus) =====
 comments:
   provider: "disqus"
