@@ -108,3 +108,7 @@ permalink: /posts/:title/
 # 홈 페이지네이션
 paginate: 10
 paginate_path: /page:num/
+
+# ===== 사이트 내 검색 (lunr, GitHub Pages와 100% 호환) =====
+search: true
+search_full_content: true
