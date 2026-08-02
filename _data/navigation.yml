@@ -8,6 +8,12 @@ main:
   - title: "Home"
     url: /
 
+  - title: "생성형 AI 데이터 분석"
+    url: /genai-series/
+
+  - title: "R 아카이브"
+    url: /archive/
+
 # Today's Sports는 데이터 분석 블로그 주제와 무관하고 AdSense 심사(발행자 콘텐츠
 # 없는 화면) 리스크가 있어 상단 메뉴에서 제외했다. 페이지 자체는 /sports/에 남아있고
 # _pages/sports.html에 noindex를 걸어뒀다.
