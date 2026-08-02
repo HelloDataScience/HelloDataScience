@@ -7,6 +7,17 @@ author_profile: true
 
 <p>2018년에 R로 진행했던 강의 노트를 카테고리별로 모아뒀습니다. 지금은 Python·생성형 AI 중심으로 글을 쓰고 있어서, 예전 R 자료는 이렇게 따로 모아둡니다.</p>
 
+<div style="border:1px solid #dcdcdc; border-radius:6px; padding:1rem 1.25rem; margin:1.5rem 0; display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+  <img src="http://image.kyobobook.co.kr/images/book/xlarge/038/x9791191905038.jpg"
+       alt="Must Have 나성호의 R 데이터 분석 입문 표지"
+       style="width:72px; border-radius:3px; flex-shrink:0;">
+  <div>
+    <strong>이 주제, 책으로도 정리해뒀습니다.</strong><br>
+    <span style="color:#595959;">《Must Have 나성호의 R 데이터 분석 입문》 — 자료구조부터 탄탄히 잡는 R 입문서</span><br>
+    <a href="{{ '/books/' | relative_url }}">책 소개와 구매처 보기 →</a>
+  </div>
+</div>
+
 {% assign r_posts = site.archive_r | sort: "date" %}
 {% assign grouped = r_posts | group_by_exp: "post", "post.categories[0]" %}
 {% for group in grouped %}
