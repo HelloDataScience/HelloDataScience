@@ -14,51 +14,58 @@ excerpt: "Lot 정보, 검사 결과, 결함 상세, 계측 결과 네 가지 반
 
 안녕하세요, 헬로데이터사이언스 나성호입니다.
 
-드디어 9회차, 이번 연재의 마지막 회차입니다. 8회차에서 고객 이탈 데이터로 "계획 세우기 → 코드 받기 → 실행하기 → 요약받기"의 전체 흐름을 익히셨죠. 오늘은 같은 흐름을, 좀 더 실전에 가까운 반도체 품질 데이터로 한 번 더 해보면서, 이번엔 결과를 보고서 템플릿에 자동으로 채워 넣는 것까지 완성해보겠습니다.
+드디어 9회차, 이번 연재의 마지막 회차입니다. 8회차에서 고객 이탈 데이터로 "계획 세우기(md) → 코드 통째로 받기(ipynb) → 실행하기 → 요약받기"의 전체 흐름을 익히셨죠. 오늘은 같은 흐름을, 좀 더 실전에 가까운 반도체 품질 데이터로 한 번 더 해보면서, 이번엔 결과를 보고서 템플릿에 자동으로 채워 넣는 것까지 완성해보겠습니다.
 
-## 오늘 쓸 데이터 — 반도체 품질 더미 데이터 4종
+## 오늘 쓸 데이터부터 받으세요
 
-이번 실습에서는 반도체 품질 데이터를 모사한 더미 데이터셋 4종을 사용합니다. 네 개의 파일 모두 Lot 식별자인 `Lot_ID`를 공통 키로 연결할 수 있도록 설계되어 있습니다.
+이번 실습에서는 반도체 품질 데이터를 모사한 더미 데이터셋 4종과, 채워 넣을 보고서 템플릿 1종을 사용합니다. 전부 아래 저장소에서 내려받으실 수 있습니다.
 
-| 구분 | 파일명 | 행 수 | 열 수 | 상세 내용 |
-|---|---|---|---|---|
-| ① Lot 정보 | lot_info.csv | 150 | 6 | Lot별 제품, 라인, 생산 기간 등 |
-| ② 검사 결과 | inspection.csv | 150 | 6 | Lot별 수율, 결함 밀도, 최종 판정 등 |
-| ③ 결함 상세 | defect.csv | 136 | 4 | 결함 유형, 결함 건수, 심각도 등 |
-| ④ 계측 결과 | metrology.csv | 600 | 8 | 공정별 측정값, 이상 여부 등 |
+- 저장소: [github.com/HelloDataScience/python-using-gpt](https://github.com/HelloDataScience/python-using-gpt)
+
+| 구분 | 파일명 | 행 수 | 상세 내용 |
+|---|---|---|---|
+| ① Lot 정보 | [lot_info.csv](https://raw.githubusercontent.com/HelloDataScience/python-using-gpt/main/lot_info.csv) | 150 | Lot별 제품, 라인, 생산 기간 등 |
+| ② 검사 결과 | [inspection.csv](https://raw.githubusercontent.com/HelloDataScience/python-using-gpt/main/inspection.csv) | 150 | Lot별 수율, 결함 밀도, 최종 판정 등 |
+| ③ 결함 상세 | [defect.csv](https://raw.githubusercontent.com/HelloDataScience/python-using-gpt/main/defect.csv) | 136 | 결함 유형, 결함 건수, 심각도 등 |
+| ④ 계측 결과 | [metrology.csv](https://raw.githubusercontent.com/HelloDataScience/python-using-gpt/main/metrology.csv) | 600 | 공정별 측정값, 이상 여부 등 |
+| 보고서 템플릿 | [report_template.xlsx](https://raw.githubusercontent.com/HelloDataScience/python-using-gpt/main/report_template.xlsx) | - | 채워 넣을 보고서 양식 |
+
+네 개의 데이터 파일 모두 Lot 식별자인 `Lot_ID`를 공통 키로 연결할 수 있도록 설계되어 있습니다.
 
 하나씩 조금 더 들여다보겠습니다.
 
 **lot_info.csv**는 Lot별 생산 정보를 담은 기준 테이블입니다. 한 행이 하나의 Lot을 의미하며, 총 150개 Lot으로 구성되어 있습니다. Product는 4종(DRAM_A, DRAM_B, Logic_A, NAND_A), Fab은 2종(FAB1, FAB2)입니다. Start_Date와 End_Date는 날짜시간형으로 변환해야 합니다.
 
-**inspection.csv**는 Lot별 최종 검사 결과를 담은 테이블입니다. lot_info와 1:1로 대응하며, 총 150행입니다. Final_Judgment는 3종(Pass, Hold, Review)입니다.
+**inspection.csv**는 Lot별 최종 검사 결과를 담은 테이블입니다. lot_info와 1:1로 대응하며, 총 150행으로 구성되어 있습니다. Final_Judgment는 3종(Pass, Hold, Review)입니다.
 
-**defect.csv**는 결함이 발생한 Lot에 한해, 결함 유형과 규모를 기록한 테이블입니다. 전체 150개 Lot 중에서 결함이 있는 69개 Lot만 포함하고 있습니다. 하나의 Lot에 여러 유형의 결함이 있을 수 있으므로, lot_info와 1:m 관계를 가집니다. Severity는 3종(High, Medium, Low), Defect_Type은 7종입니다.
+**defect.csv**는 결함이 발생한 Lot에 한해, 결함 유형과 규모를 기록한 테이블입니다. 전체 150개 Lot 중에서 결함이 있는 69개 Lot만 포함하고 있습니다. 하나의 Lot에 여러 유형의 결함이 있을 수 있으므로, lot_info와 1:m 관계를 가집니다. Severity는 3종(High, Medium, Low), Defect_Type은 7종(Particle, Scratch, Open defect, Pattern bridge, Overlay fail, Thickness fail, CD outlier)입니다.
 
 **metrology.csv**는 Lot별 주요 공정 단계에서 측정한 값을 담은 테이블입니다. 150개 Lot별로 4개 공정 단계를 측정하므로, 총 600행으로 구성되어 있습니다. Process_Step은 4종(Lithography, Etch, Deposition, CMP)입니다.
 
 ## 오늘의 목표 — 보고서 템플릿 자동 완성
 
-이번엔 단순히 분석만 하는 게 아니라, 미리 준비된 '반도체 품질 분석 보고서' 엑셀 템플릿의 빈칸을 자동으로 채우는 것까지 해보겠습니다. 템플릿에는 보고 기간, 작성일자 같은 기본 정보 외에, 이런 항목들이 비어 있습니다.
+오늘은 단순히 분석만 하는 게 아니라, 미리 준비된 '반도체 품질 분석 보고서' 엑셀 템플릿의 빈칸을 자동으로 채우는 것까지 해보겠습니다. 템플릿에는 보고 기간, 작성일자 같은 기본 정보 외에, 이런 항목들이 비어 있습니다.
 
-- **주요 KPI 요약**: 평균 수율(%), 불량률(%), 검사 Lot 수, 주요 불량 유형, 수율 미달 Lot 수, 최저 수용 제품
+- **주요 KPI 요약**: 평균 수율(%), 불량률(%), 검사 Lot 수, 주요 불량 유형, 수율 미달 Lot 수, 최저 수율 제품
 - **제품별 품질 지표**: 제품(DRAM_A, DRAM_B, Logic_A, NAND_A)별 검사 Lot 수, 평균 수율(%), 불량률(%)
 - **분석 결과 요약**: 생성형 AI가 작성한 분석 결과 및 주의사항 문장
 
-이 빈칸들을 두 개의 GPT를 활용해 채워 넣는 게 오늘의 목표입니다.
+템플릿에는 "연한 노란색 셀은 생성형 AI가 생성한 코드가 자동으로 채우는 입력 영역입니다"라는 안내 문구도 함께 있습니다. 이 노란 셀들을 채우는 게 오늘의 최종 목표입니다.
 
-## 실습 프로세스 — 8회차와 거의 똑같습니다
+## 실습 프로세스 — 8회차와 거의 똑같습니다, 첨부 파일만 늘어났을 뿐
 
 | 단계 | 사용할 도구 | 실습 내용 | 산출물 |
 |---|---|---|---|
-| 1단계 | Data Analysis Planner | 데이터와 보고서 템플릿 파일 첨부, 분석 계획 ipynb 파일 다운로드 | 분석 계획 ipynb 파일 |
-| 2단계 | Jupyter Notebook | ipynb 파일 열기, 분석 계획 확인 | - |
-| 3단계 | Python Code Assistant | 셀 단위 지시로 Python 코드 생성하기, 에러 발생하면 코드 수정 요청하기 | 셀 단위 Python 코드, 전처리 결과, 요약 지표 |
-| 4단계 | Jupyter Notebook & Excel | 분석 결과를 보고서 템플릿에 자동 입력, 자동화된 보고서 초안 확인 | 자동화된 보고서 초안 |
+| 1단계 | Data Analysis Planner | 데이터 4종과 보고서 템플릿을 함께 첨부, 분석 계획 요청 | 분석 계획 md 파일 |
+| 2단계 | Python Code Assistant | md 계획 파일과 데이터 4종, 보고서 템플릿을 함께 첨부해 코드 작성 요청 | 분석 코드가 담긴 ipynb 파일 |
+| 3단계 | Colab | ipynb 파일을 열어 셀 단위로 실행, 에러 발생 시 Python Code Assistant에 메시지를 붙여넣어 수정 | 전처리 결과, 요약 지표, 채워진 보고서 |
+| 4단계 | Excel | 자동으로 채워진 보고서 템플릿의 노란 셀을 확인 | 자동화된 보고서 초안 |
 
-8회차에서 익힌 흐름에 딱 한 단계, "보고서 템플릿에 자동으로 채워 넣기"가 추가된 것뿐입니다.
+8회차에서 익힌 흐름과 거의 같습니다. 다만 이번엔 Data Analysis Planner와 Python Code Assistant에 첨부하는 파일이 데이터 1개에서 데이터 4개 + 보고서 템플릿까지, 총 5개로 늘어났다는 점만 다릅니다.
 
-**1단계**에서는 Data Analysis Planner에 데이터 파일 4종과 보고서 템플릿 파일을 함께 첨부하고, 분석 계획을 요청합니다. 그러면 첨부한 데이터와 템플릿 구조를 먼저 확인한 뒤, 템플릿 항목을 채우는 데 필요한 열 단위 분석 계획을 Jupyter Notebook 파일로 만들어줍니다.
+**1단계**에서는 Data Analysis Planner에 `lot_info.csv`, `inspection.csv`, `defect.csv`, `metrology.csv`, `report_template.xlsx` 다섯 개 파일을 함께 첨부하고, 분석 계획을 요청합니다. 그러면 데이터 구조와 템플릿의 빈칸을 먼저 확인한 뒤, 그 빈칸을 채우는 데 필요한 분석 계획을 md 파일로 만들어줍니다.
+
+**2단계**에서는 이 md 파일을 방금 첨부했던 데이터 파일들과 함께 Python Code Assistant에 다시 첨부합니다. 그러면 데이터를 불러오고 전처리하고 지표를 계산해서, 최종적으로 보고서 템플릿의 노란 셀까지 채워 넣는 전체 코드가 담긴 ipynb 파일을 한 번에 받게 됩니다.
 
 **3단계**에서 에러가 발생하면 8회차와 똑같이 전체 에러 메시지를 복사해서 Python Code Assistant에 붙여넣으면 수정된 코드를 받을 수 있습니다. 그런데 한 가지 새로운 상황이 생길 수 있습니다. 보고서 템플릿에 지표가 잘못 입력된 경우인데, 이럴 때는 에러 메시지가 따로 없으니 **보고서 화면을 캡처해서 이미지로 Python Code Assistant에 첨부**하면 됩니다. 그림을 보고 뭐가 잘못됐는지 파악해서 수정된 코드를 알려줍니다.
 
