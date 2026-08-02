@@ -63,6 +63,13 @@ comments:
   disqus:
     shortname: "hellodatascience"
 
+# ===== 방문자 분석 (Google Analytics 4) =====
+analytics:
+  provider: "google-gtag"
+  google:
+    tracking_id: "G-XH5N9LTE27"
+    anonymize_ip: false
+
 # ===== 모든 글에 적용될 기본값 =====
 defaults:
   - scope:
