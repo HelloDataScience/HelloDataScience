@@ -43,6 +43,12 @@ author:
       icon: "fas fa-fw fa-file-lines"
       url: "/resume/"
 
+# ===== 댓글 (Disqus) =====
+comments:
+  provider: "disqus"
+  disqus:
+    shortname: "hellodatascience"
+
 # ===== 모든 글에 적용될 기본값 =====
 defaults:
   - scope:
@@ -54,7 +60,7 @@ defaults:
       read_time: true
       show_date: true
       date_format: "%Y년 %m월 %d일"
-      comments: false
+      comments: true
       share: true
       related: true
       toc: true
