@@ -1,7 +1,7 @@
 ---
 title: "에이스 말, 다 믿으면 큰일 납니다"
 subtitle: "환각과 인지부채 — AI를 쓸수록 똑똑해질까, 게을러질까"
-date: 2026-08-03
+date: 2026-08-04
 categories:
   - 생성형AI
 tags:

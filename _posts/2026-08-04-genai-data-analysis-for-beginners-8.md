@@ -1,7 +1,7 @@
 ---
 title: "이제 진짜로 해봅시다 — 고객 이탈 데이터 분석 실습"
 subtitle: "두 개의 GPT로 처음부터 끝까지 데이터 분석하기"
-date: 2026-08-03
+date: 2026-08-04
 categories:
   - 생성형AI
 tags:

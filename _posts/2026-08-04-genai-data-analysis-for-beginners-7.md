@@ -1,7 +1,7 @@
 ---
 title: "데이터 분석은 요리와 똑같습니다"
 subtitle: "Python·Colab 첫걸음, 코드 몰라도 괜찮습니다"
-date: 2026-08-03
+date: 2026-08-04
 categories:
   - 생성형AI
 tags:
