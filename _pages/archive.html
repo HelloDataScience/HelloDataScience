@@ -1,9 +1,13 @@
 ---
-title: "지난 R 강의 노트"
+title: "지난 강의 노트"
 layout: single
 permalink: /archive/
 author_profile: true
 ---
+
+<p>예전에 작성해두었던 R·Python 강의 노트를 모아두었습니다.</p>
+
+<h2>R 아카이브</h2>
 
 <p>2018년에 업로드했던 R 강의 노트를 카테고리별로 모아두었습니다.</p>
 
@@ -20,9 +24,27 @@ author_profile: true
 </div>
 
 {% assign r_posts = site.archive_r | sort: "date" %}
-{% assign grouped = r_posts | group_by_exp: "post", "post.categories[0]" %}
-{% for group in grouped %}
-<h2>{{ group.name }}</h2>
+{% assign r_grouped = r_posts | group_by_exp: "post", "post.categories[0]" %}
+{% for group in r_grouped %}
+<h3>{{ group.name }}</h3>
+<ul>
+  {% for post in group.items %}
+  <li>
+    <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+    <span style="color:#767676; font-size:0.85em;">&nbsp;({{ post.date | date: "%Y-%m" }})</span>
+  </li>
+  {% endfor %}
+</ul>
+{% endfor %}
+
+<h2>Python 아카이브</h2>
+
+<p>2021년 《Must Have 나성호의 R 데이터 분석 입문》의 R 코드를 Python으로 옮겨보며 준비했던 강의 노트 중 완성된 부분만 모아두었습니다.</p>
+
+{% assign py_posts = site.archive_py | sort: "date" %}
+{% assign py_grouped = py_posts | group_by_exp: "post", "post.categories[0]" %}
+{% for group in py_grouped %}
+<h3>{{ group.name }}</h3>
 <ul>
   {% for post in group.items %}
   <li>

@@ -25,8 +25,9 @@ plugins:
 # _pages 폴더 안의 파일들을 실제 페이지로 빌드하기 위한 설정.
 # 이게 없으면 _pages/resume.html 같은 파일은 Jekyll이 무시해서 404가 납니다.
 #
-# archive_r: 2018년 R 강의 노트 전용 collection. 일부러 posts와 분리해서
-# 홈 화면 최근 글 목록·태그/카테고리·RSS 피드에 안 섞이게 한다.
+# archive_r: 2018년 R 강의 노트 전용 collection. archive_py: 2021년 PyRingual
+# 준비 원고 중 완성된 챕터만 옮긴 Python 강의 노트 전용 collection. 둘 다 일부러
+# posts와 분리해서 홈 화면 최근 글 목록·태그/카테고리·RSS 피드에 안 섞이게 한다.
 # /archive/ 페이지에서만 링크로 들어갈 수 있다 (/sports/ 페이지와 같은 패턴).
 collections:
   pages:
@@ -35,6 +36,9 @@ collections:
   archive_r:
     output: true
     permalink: /archive/:path/
+  archive_py:
+    output: true
+    permalink: /archive/py/:path/
 
 # docs/ 는 내부 운영 문서(예: sports 프록시 설정 노트)라 사이트에는 배포하지 않음
 exclude:
@@ -97,6 +101,21 @@ defaults:
   - scope:
       path: ""
       type: archive_r
+    values:
+      layout: single
+      author_profile: true
+      read_time: true
+      show_date: true
+      date_format: "%Y년 %m월 %d일"
+      comments: false
+      share: false
+      related: false
+      toc: true
+      toc_sticky: true
+
+  - scope:
+      path: ""
+      type: archive_py
     values:
       layout: single
       author_profile: true
