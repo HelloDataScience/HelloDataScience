@@ -1,7 +1,7 @@
 ---
 title: "이 에이스, 사실은 '초강력 자동완성기'였습니다"
 subtitle: "생성형 AI가 답을 만들어내는 진짜 원리"
-date: 2026-08-02
+date: 2026-08-03
 categories:
   - 생성형AI
 tags:

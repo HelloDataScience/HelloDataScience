@@ -1,7 +1,7 @@
 ---
 title: "물어보는 AI, 옆에서 거드는 AI, 통째로 맡기는 AI"
 subtitle: "대화형·코파일럿·에이전트, 그리고 SK하이닉스·삼성전자의 실제 활용 사례"
-date: 2026-08-02
+date: 2026-08-03
 categories:
   - 생성형AI
 tags:

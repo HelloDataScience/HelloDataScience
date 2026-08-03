@@ -1,7 +1,7 @@
 ---
 title: "에이스와 대화하듯 다듬어가는 법"
 subtitle: "완벽한 프롬프트 대신, 단계별 요청과 나만의 GPT"
-date: 2026-08-02
+date: 2026-08-03
 categories:
   - 생성형AI
 tags:
