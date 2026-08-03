@@ -40,9 +40,11 @@ collections:
     output: true
     permalink: /archive/py/:path/
 
-# docs/ 는 내부 운영 문서(예: sports 프록시 설정 노트)라 사이트에는 배포하지 않음
+# internal-docs/ 는 내부 운영 문서(예: sports 프록시 설정 노트)라 사이트에는 배포하지 않음.
+# 이름에 "docs"가 들어가면 GitHub Pages의 "docs 폴더로 배포" 관례와 헷갈릴 수 있어서
+# internal-docs로 지었다 — 이 폴더 자체는 그 관례와 무관하며 그냥 빌드에서 제외된 일반 폴더다.
 exclude:
-  - docs
+  - internal-docs
 
 # ===== 작성자 프로필 (사이드바) =====
 # home: 사이드바의 이름(나성호)을 클릭했을 때 이동할 주소

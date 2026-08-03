@@ -15,7 +15,7 @@ excerpt: "이번 포스팅에서는 R 외부에 저장되어 있는 csv, txt, xl
 
 이번 포스팅에서는 R 외부에 저장되어 있는 `csv`, `txt`, `xlsx` 파일을 읽어서 데이터프레임으로 변환하는 방법에 대해 살펴보겠습니다. R에서는 이 외에도 `SAS`나 `SPSS` 등 다양한 프로그램에서 생성된 데이터도 읽어올 수 있으니 관심있는 분들은 [**DataCamp의 데이터 불러오기 튜토리얼**](https://www.datacamp.com/community/tutorials/r-data-import-tutorial)을 확인하기 바랍니다.
 
-이번에 실습할 데이터는 지난 **R Crawler 4 JavaScript 우회하기** 포스팅에서 수집한 `xlsx` 파일입니다. 제가 이 파일을 `csv`와 `txt` 파일로도 변환하여 저의 [GitHub](https://github.com/HelloDataScience/HelloDataScience/tree/main/assets/data)에 올렸으니 필요한 분은 다운로드하기 바랍니다.
+이번에 실습할 데이터는 지난 **R Crawler 4 JavaScript 우회하기** 포스팅에서 수집한 `xlsx` 파일입니다. 제가 이 파일을 `csv`와 `txt` 파일로도 변환하여 저의 [GitHub](https://github.com/HelloDataScience/datasets)에 올렸으니 필요한 분은 다운로드하기 바랍니다.
 
 데이터를 불러올 때 해당 파일의 인코딩 방식을 확인하는 편이 좋습니다. OS마다 기본 인코딩 설정이 서로 다른데요. Windows는 `EUC-KR`, Mac은 `UTF-8`입니다. 파일의 인코딩 방식을 확인하지 않고 읽어오는 경우, 주로 한글이 깨져보이는 경우가 발생하는데 이는 인코딩 설정이 서로 달라서 그렇습니다. 그러므로 파일의 인코딩 방식을 먼저 확인하고 자신의 OS에 따라 인코딩 설정 인자를 추가해주면 에러 발생을 사전에 방지할 수 있습니다.
 
@@ -26,7 +26,7 @@ excerpt: "이번 포스팅에서는 R 외부에 저장되어 있는 csv, txt, xl
 ``` r
 # csv 파일이 저장된 GitHub URL을 지정합니다. 
 # 로컬 컴퓨터에 저장되어 있는 경우도 가능합니다. 
-filepath <- 'https://raw.githubusercontent.com/HelloDataScience/HelloDataScience/main/assets/data/2017_Baseball_hitter_stat.csv'
+filepath <- 'https://raw.githubusercontent.com/HelloDataScience/datasets/main/2017_Baseball_hitter_stat.csv'
 
 # readr 패키지의 guess_encoding() 함수로 파일의 인코딩 방식을 확인합니다.
 library(readr)
@@ -124,7 +124,7 @@ str(object = dataCsv)
 
 ``` r
 # 불러올 파일이 저장된 경로를 지정합니다. 
-filepath <- 'https://raw.githubusercontent.com/HelloDataScience/HelloDataScience/main/assets/data/2017_Baseball_hitter_stat.txt'
+filepath <- 'https://raw.githubusercontent.com/HelloDataScience/datasets/main/2017_Baseball_hitter_stat.txt'
 
 # 불러올 파일의 인코딩 방식을 확인합니다. 
 guess_encoding(file = filepath)
@@ -204,7 +204,7 @@ GitHub에서는 `csv`와 `txt` 타입의 파일을 `raw` 형태로 브라우저�
 
 ``` r
 # 아래 GitHub Repository에 접속한 후 xlsx 파일을 다운로드 합니다.
-# https://github.com/HelloDataScience/HelloDataScience/blob/main/assets/data/2017_Baseball_hitter_stat.xlsx
+# https://github.com/HelloDataScience/datasets/blob/main/2017_Baseball_hitter_stat.xlsx
 
 # 현재 작업경로에 데이터를 저장할 폴더(data)가 있는지 확인하고 없으면 새로 만듭니다.
 folder <- './data/'
