@@ -10,7 +10,12 @@ tags:
   - ChatGPT
   - Python
 excerpt: "Data Analysis Planner로 분석 계획을 세우고, Python Code Assistant로 노트북 전체를 한 번에 받는 전체 과정을 고객 이탈 데이터로 직접 실습합니다. 에러와 버그의 차이, 그리고 에러가 나면 어떻게 해결하는지도 함께 다룹니다."
+sidebar:
+  nav: "genai"
 ---
+
+이 글은 「생성형 AI로 시작하는 데이터 분석」 9회 연재 중 **8회**입니다. [전체 목차 보기](/genai-series/)
+{: .notice--info}
 
 안녕하세요, 헬로데이터사이언스 나성호입니다.
 

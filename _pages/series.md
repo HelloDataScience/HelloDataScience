@@ -6,6 +6,8 @@ layout: single
 author_profile: true
 toc: true
 toc_sticky: true
+sidebar:
+  nav: "genai"
 ---
 
 이 페이지는 "생성형 AI로 시작하는 데이터 분석" 연재 전체를 한눈에 볼 수 있도록 모아둔 안내 페이지입니다. 각 회차는 최신 글 목록에도 올라오지만, 처음 오신 분이라면 최신순이 아니라 이 순서대로 보시는 걸 권해드립니다.
