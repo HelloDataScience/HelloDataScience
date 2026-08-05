@@ -8,13 +8,13 @@ toc: true
 toc_sticky: true
 ---
 
-Hello Data Science를 찾아주셔서 감사합니다. 아래 방법으로 연락 주시면 확인하는 대로 답변드리겠습니다.
+**Hello Data Science**를 찾아주셔서 감사합니다. 아래 방법으로 연락 주시면 확인하는 대로 답변드리겠습니다.
 
 ## 이메일
 
 <i class="fas fa-fw fa-envelope"></i> **[pyringual@hds.ai.kr](mailto:pyringual@hds.ai.kr)**
 
-가장 확실한 연락 방법입니다. 보통 2~3일 안에 답장드리고 있습니다만, 강의가 몰리는 주에는 조금 늦어질 수 있는 점 혜량하여 주시면 감사하겠습니다.
+가장 확실한 연락 방법입니다. 최대한 빠르게 회신해드리고 있습니다. 다만 강의가 있는 날에는 회신이 늦은 밤에 도착할 수도 있다는 점을 혜량하여 주시면 감사하겠습니다.
 
 ## 이런 문의를 받고 있습니다
 
@@ -56,6 +56,6 @@ Hello Data Science를 찾아주셔서 감사합니다. 아래 방법으로 연�
 | 사이트명 | Hello Data Science (헬로데이터사이언스) |
 | 운영자 | 나성호 |
 | 이메일 | [pyringual@hds.ai.kr](mailto:pyringual@hds.ai.kr) |
-| 주소 | [https://www.hds.ai.kr](https://www.hds.ai.kr) |
+| 사이트 주소 | [https://www.hds.ai.kr](https://www.hds.ai.kr) |
 
 개인정보 처리와 관련한 사항은 [개인정보처리방침](/privacy-policy/)을 참고해 주시기 바랍니다.
