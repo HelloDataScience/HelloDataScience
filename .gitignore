@@ -5,7 +5,11 @@ _site/
 .sass-cache/
 
 # bundler
-/vendor/bundle/
+# /vendor/bundle/ 만 막으면 macOS가 만드는 중복 사본("vendor 2/")이 걸러지지 않아
+# git status에 계속 뜬다. vendor 로 시작하는 루트 폴더를 통째로 무시한다.
+/vendor/
+/vendor */
+
 .bundle/
 
 # macOS
