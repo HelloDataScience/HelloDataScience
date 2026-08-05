@@ -73,8 +73,14 @@ author:
 # ===== 사이트 푸터 =====
 footer:
   links:
+    - label: "소개"
+      icon: "fas fa-fw fa-circle-info"
+      url: "/about/"
+    - label: "문의하기"
+      icon: "fas fa-fw fa-envelope"
+      url: "/contact/"
     - label: "개인정보처리방침"
-      icon: "fas fa-fw fa-link"
+      icon: "fas fa-fw fa-shield-halved"
       url: "/privacy-policy/"
 
 # ===== 댓글 (Disqus) =====
