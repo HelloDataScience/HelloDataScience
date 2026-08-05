@@ -33,7 +33,7 @@ excerpt: "생성형 AI를 쓰는 방식은 크게 세 가지입니다. 물어보
 
 가장 많이 쓰는 대화형 AI 네 가지를 강의 자료에 나온 평가를 기준으로 정리해 봤습니다.
 
-| 구분 | ChatGPT | Gemini | Claude | Perplexity |
+|<center>구분</center>|<center>ChatGPT</center>|<center>Gemini</center>|<center>Claude</center>|<center>Perplexity</center>|
 |---|---|---|---|---|
 | 강점 | 기획·코딩·데이터분석·문서작성 등 균형이 좋음 | 최신 정보 조사, Google 생태계 연동에 강함 | 긴 글 편집, 복잡한 지시 준수, 코딩 보조 | 최신 정보 검색, 출처 제시 기반 사실 확인 |
 | 약점 | 검색·출처 검증 없이 답하면 틀릴 수 있음 | 순수 대화형 글쓰기는 다소 덜 자연스러움 | 실시간 검색은 약할 수 있음, 응답이 다소 느림 | 깊은 사고나 장기 프로젝트에는 덜 유연 |
@@ -45,7 +45,7 @@ excerpt: "생성형 AI를 쓰는 방식은 크게 세 가지입니다. 물어보
 
 참고로 LLM(대규모 언어 모델)이 어떻게 발전해왔는지도 표로 정리해봤습니다.
 
-| 시기 | 대표 모델 | 상세 내용 |
+|<center>시기</center>|<center>대표 모델</center>|<center>상세 내용</center>|
 |---|---|---|
 | 2017 | Transformer | RNN 없이 Attention만으로 문맥을 처리하는 신경망 구조 도입 |
 | 2020 | GPT-3 | 175B 파라미터 모델로 Few-Shot 능력이 본격 주목받음 |

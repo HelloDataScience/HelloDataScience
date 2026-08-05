@@ -22,7 +22,7 @@ excerpt: "Lot 정보, 검사 결과, 결함 상세, 계측 결과 네 가지 반
 
 - 저장소: [github.com/HelloDataScience/python-using-gpt](https://github.com/HelloDataScience/python-using-gpt)
 
-| 구분 | 파일명 | 행 수 | 상세 내용 |
+|<center>구분</center>|<center>파일명</center>|<center>행 수</center>|<center>상세 내용</center>|
 |---|---|---|---|
 | ① Lot 정보 | [lot_info.csv](https://raw.githubusercontent.com/HelloDataScience/python-using-gpt/main/lot_info.csv) | 150 | Lot별 제품, 라인, 생산 기간 등 |
 | ② 검사 결과 | [inspection.csv](https://raw.githubusercontent.com/HelloDataScience/python-using-gpt/main/inspection.csv) | 150 | Lot별 수율, 결함 밀도, 최종 판정 등 |
@@ -54,7 +54,7 @@ excerpt: "Lot 정보, 검사 결과, 결함 상세, 계측 결과 네 가지 반
 
 ## 실습 프로세스 — 8회차와 거의 똑같습니다, 첨부 파일만 늘어났을 뿐
 
-| 단계 | 사용할 도구 | 실습 내용 | 산출물 |
+|<center>단계</center>|<center>사용할 도구</center>|<center>실습 내용</center>|<center>산출물</center>|
 |---|---|---|---|
 | 1단계 | Data Analysis Planner | 데이터 4종과 보고서 템플릿을 함께 첨부, 분석 계획 요청 | 분석 계획 md 파일 |
 | 2단계 | Python Code Assistant | md 계획 파일과 데이터 4종, 보고서 템플릿을 함께 첨부해 코드 작성 요청 | 분석 코드가 담긴 ipynb 파일 |
