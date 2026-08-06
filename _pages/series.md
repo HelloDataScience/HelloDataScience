@@ -59,11 +59,11 @@ sidebar:
 
 생성형 AI는 확률이 높은 답을 자신 있게 내놓을 뿐, 사실 여부를 검증하지 않습니다. MIT의 인지부채 연구와 METR의 AI 코딩 역설 연구를 통해, 왜 반드시 사람이 검토해야 하는지 살펴봅니다.
 
-### 4회 — [물어보는 AI, 옆에서 거드는 AI, 통째로 맡기는 AI](/posts/genai-data-analysis-for-beginners-4/)
+### 4회 — [생성형 AI를 사용하는 세 가지 방식](/posts/genai-data-analysis-for-beginners-4/)
 
 *대화형·코파일럿·에이전트, 그리고 SK하이닉스·삼성전자의 실제 활용 사례*
 
-생성형 AI를 쓰는 방식은 크게 세 가지입니다. 물어보고 답을 받는 대화형, 작업 중인 화면 안에서 거들어주는 코파일럿, 목표만 주면 알아서 여러 단계를 수행하는 에이전트. ChatGPT·Gemini·Claude·Perplexity 비교와 SK하이닉스·삼성전자 사례까지 정리합니다.
+생성형 AI를 쓰는 방식은 크게 세 가지입니다. 물어보고 답을 받는 대화형, 작업 중인 화면 안에서 거들어주는 코파일럿, 목표만 주면 알아서 여러 단계를 수행하는 에이전트. ChatGPT·Gemini·Claude 비교와 SK하이닉스·삼성전자 사례까지 정리합니다.
 
 ### 5회 — [에이스에게 일 맡길 때, 이 9가지는 빠뜨리지 마세요](/posts/genai-data-analysis-for-beginners-5/)
 
