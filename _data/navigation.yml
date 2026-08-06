@@ -34,7 +34,7 @@ genai:
         url: /genai-series/
       - title: "시작하며 — Python 모르는 사람만"
         url: /posts/genai-data-analysis-for-beginners/
-      - title: "1회 — AI는 어떻게 에이스가 되었나"
+      - title: "1회 — 규칙 기반 AI에서 생성형 AI까지"
         url: /posts/genai-data-analysis-for-beginners-1/
       - title: "2회 — 에이스의 정체"
         url: /posts/genai-data-analysis-for-beginners-2/
