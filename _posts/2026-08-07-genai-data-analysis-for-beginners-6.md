@@ -1,7 +1,7 @@
 ---
 title: "생성형 AI와 대화하며 프롬프트를 다듬는 법"
 subtitle: "완벽한 프롬프트 대신, 단계별 요청과 나만의 GPT"
-date: 2026-08-06
+date: 2026-08-07
 categories:
   - 생성형AI
 tags:
