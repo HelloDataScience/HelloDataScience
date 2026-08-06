@@ -71,7 +71,7 @@ sidebar:
 
 좋은 프롬프트는 문장을 길게 쓰는 게 아니라, 필요한 요소를 빠뜨리지 않는 것입니다. 프롬프트를 구성하는 9가지 요소와 각각의 좋은 예·나쁜 예를 정리했습니다.
 
-### 6회 — [에이스와 대화하듯 다듬어가는 법](/posts/genai-data-analysis-for-beginners-6/)
+### 6회 — [생성형 AI와 대화하며 프롬프트를 다듬는 법](/posts/genai-data-analysis-for-beginners-6/)
 
 *완벽한 프롬프트 대신, 단계별 요청과 나만의 GPT*
 
