@@ -1,7 +1,7 @@
 ---
 title: "데이터 분석은 요리와 똑같습니다"
 subtitle: "Python·Colab 첫걸음, 코드 몰라도 괜찮습니다"
-date: 2026-08-07
+date: 2026-08-08
 categories:
   - 생성형AI
 tags:
@@ -152,7 +152,7 @@ df.duplicated().sum()          # 중복 건수 확인
 
 오늘은 Python이 뭔지, Colab을 어떻게 쓰는지, 구글 드라이브를 어떻게 연결하는지, 그리고 데이터프레임과 기술통계의 기본 개념까지 훑어봤습니다. 딱 이 정도만 알고 계시면, 다음 실습부터는 충분히 따라오실 수 있습니다.
 
-다음 8회차부터는 진짜 실전입니다. 오늘 준비한 재료(Python, Colab, 데이터프레임 개념)를 가지고, 6회차에서 소개해드린 맞춤형 GPT 두 개를 활용해 고객 이탈 데이터를 실제로 분석해보겠습니다. 감사합니다.
+다음 실습 편에서는 진짜 실전입니다. 오늘 준비한 재료(Python, Colab, 데이터프레임 개념)를 가지고, 6회차에서 소개해드린 맞춤형 GPT 두 개를 활용해 두 가지 더미 데이터를 처음부터 끝까지 분석해보는 과정을 별도로 이어가겠습니다. 감사합니다.
 
 [^1]: Press, G. (2016). [Cleaning Big Data: Most Time-Consuming, Least Enjoyable Data Science Task, Survey Says](https://www.forbes.com/sites/gilpress/2016/03/23/data-preparation-most-time-consuming-least-enjoyable-data-science-task-survey-says/). Forbes. (CrowdFlower 설문 기반)
 [^2]: [PYPL PopularitY of Programming Language Index](https://pypl.github.io/PYPL.html) — 구글에서 각 언어의 튜토리얼이 얼마나 검색되는지를 기준으로 집계하는 지수입니다. 순위·점유율은 매달 바뀌므로 정확한 수치는 방문 시점의 사이트를 직접 확인해주세요. 확인일: 2026-08-02
