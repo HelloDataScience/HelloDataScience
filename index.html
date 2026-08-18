@@ -17,6 +17,26 @@ author_profile: true
   JS가 꺼져 있으면 29편이 그대로 다 보인다(기능 저하일 뿐 깨지지 않음).
 {%- endcomment -%}
 
+{%- comment -%}
+  테마의 archive 레이아웃은 페이지 제목 <h1 class="page__title">을 조건 없이 그린다.
+  홈은 제목이 없어서(title: "") 빈 h1이 남고, 내용이 없으니 줄 상자는 안 생기지만
+  margin-bottom 여백만 목록 위에 붕 뜬 채로 남는다. 그 빈 요소만 숨긴다.
+
+  title:에 값을 넣어 h1을 살리는 방법은 쓰지 않는다 — <title> 태그가
+  "Hello Data Science"에서 "<제목> - Hello Data Science"로 바뀌어 홈 SEO에 손해다.
+  테마 전체를 건드리는 main.scss 오버라이드 대신 홈에만 적용되는 style로 둔다.
+{%- endcomment -%}
+<style>
+  /* 홈은 제목이 없어(title: "") 빈 h1만 남으므로 그 여백을 없앤다. */
+  #main .page__title:empty { display: none; }
+
+  /* 페이지 내비게이션 가운데 정렬. 테마는 .pagination li를 float으로 왼쪽에
+     붙이는데, ul을 flex로 바꾸면 float은 무시되고 li의 음수 margin(-1px)으로
+     테두리가 맞물리는 버튼 그룹 모양은 그대로 유지된다.
+     폭이 좁은 화면에서 버튼이 넘칠 수 있어 wrap을 함께 준다. */
+  #home-pagination ul { display: flex; flex-wrap: wrap; justify-content: center; }
+</style>
+
 {%- assign locale = site.locale -%}
 
 {%- comment -%}
