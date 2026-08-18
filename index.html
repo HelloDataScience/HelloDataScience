@@ -1,7 +1,39 @@
 ---
-layout: home
+layout: archive
+title: ""
 author_profile: true
 ---
 
+{%- comment -%}
+  홈 화면. 원래는 `layout: home`을 썼는데, 그 레이아웃은 site.posts만 나열한다
+  (테마 _layouts/home.html → paginator.posts 또는 site.posts). archive_r/archive_py는
+  collection이라 site.posts에 안 들어가므로 홈에 21편이 통째로 안 보였다.
+
+  그래서 layout: archive로 바꾸고 목록을 직접 두 섹션으로 그린다.
+  단순히 concat해서 날짜순으로 섞지 않는 이유: 아카이브 글은 2018~2021년 날짜라
+  "최근 글" 제목 아래로 들어가면 의미가 어긋나고, posts와 아카이브를 분리해둔
+  기존 의도도 사라진다. 섹션을 나누면 홈에서 전체 분량은 다 보이면서 구분은 유지된다.
+
+  entries를 직접 넘기면 테마의 documents-collection.html이 그대로 렌더링해준다
+  (넘길 때는 정렬까지 마친 배열이어야 한다 — sort_by를 안 주면 그대로 출력).
+{%- endcomment -%}
+
 <p>Python을 활용한 데이터 분석/시각화, 머신러닝, 딥러닝 강의 노트를 정리하는 공간입니다. 최근에는 생성형 AI를 활용한 Python 데이터 분석 관련 글을 올리고 있습니다.</p>
-<p>R 강의 노트는 <a href="{{ '/archive/' | relative_url }}">아카이브</a>에서 보실 수 있습니다.</p>
+
+{%- assign locale = site.locale -%}
+
+<h3 class="archive__subtitle">최근 글</h3>
+
+{%- assign recent_posts = site.posts -%}
+<div class="entries-list">
+  {% include documents-collection.html locale=locale entries=recent_posts type='list' %}
+</div>
+
+<h3 class="archive__subtitle">지난 강의 노트</h3>
+
+<p>2018~2021년에 작성한 R·Python 강의 노트입니다. 카테고리별로 정리된 목록은 <a href="{{ '/archive/' | relative_url }}">아카이브</a>에서 보실 수 있습니다.</p>
+
+{%- assign archive_all = site.archive_r | concat: site.archive_py | sort: "date" | reverse -%}
+<div class="entries-list">
+  {% include documents-collection.html locale=locale entries=archive_all type='list' %}
+</div>

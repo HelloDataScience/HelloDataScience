@@ -147,8 +147,8 @@ defaults:
 permalink: /posts/:title/
 
 # 홈 페이지네이션
-paginate: 10
-paginate_path: /page:num/
+# paginate: 10   # 홈(index.html)에서 paginator를 쓰지 않으므로 비활성화. 켜두면 /page2/ 이하가 홈 목록을 통째로 복제한 중복 페이지로 생성된다(실측 확인).
+# paginate_path: /page:num/
 
 # ===== 사이트 내 검색 (lunr, GitHub Pages와 100% 호환) =====
 search: true
