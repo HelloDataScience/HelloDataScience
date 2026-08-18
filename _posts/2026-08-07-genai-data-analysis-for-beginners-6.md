@@ -26,12 +26,12 @@ sidebar:
 먼저 제가 강의 중에 소개하는 강의안에서, 같은 계정과 같은 모델로 "제주도 여행 계획을 세워줘"라는 프롬프트를 실행하여 받은 답변을 캡처해놓은 두 개의 이미지를 보여드리겠습니다. 5회차에서 나쁜 프롬프트의 예로 들었던, 지시 하나만 있고 나머지 여덟 가지 요소는 전부 빠진 바로 그 프롬프트입니다. 한 번은 평소 쓰던 일반 대화창에서 실행했고, 한 번은 이전 대화나 메모리의 영향을 받지 않는 임시 대화창에서 실행했습니다.
 
 <figure>
- <figcaption>① 조건이 부족한 프롬프트 — 일반 대화창에서 실행한 결과</figcaption>
+ <figcaption><strong>① 조건이 부족한 프롬프트 — 일반 대화창에서 실행한 결과</strong></figcaption>
  <img src="https://github.com/HelloDataScience/images/blob/main/Jeju_Travel_Plan_1.png?raw=true" alt="조건이 부족한 프롬프트를 일반 대화창에서 실행한 결과">
 </figure>
 
 <figure>
- <figcaption>② 조건이 부족한 프롬프트 — 임시 대화창에서 실행한 결과</figcaption>
+ <figcaption><strong>② 조건이 부족한 프롬프트 — 임시 대화창에서 실행한 결과</strong></figcaption>
  <img src="https://github.com/HelloDataScience/images/blob/main/Jeju_Travel_Plan_2.png?raw=true" alt="조건이 부족한 프롬프트를 임시 대화창에서 실행한 결과">
 </figure>
 
@@ -44,12 +44,12 @@ sidebar:
 반대로 조건을 명확하게 지정하면 어떨까요? 아래 두 이미지는 5회차 마지막에 보여드렸던 '좋은 프롬프트', 즉 도착 시각과 숙소 위치, 선호하는 여행 스타일, 원하는 출력 형식까지 9가지 요소를 모두 담은 프롬프트를 앞서와 똑같이 두 대화창에서 실행한 결과입니다. 사용자가 요구한 기준과 형식에 딱 맞춰 답변이 나왔고, 서로 다른 대화창에서 실행했는데도 제목("제주도 2박 3일 효도 여행 일정표")부터 표의 열 구성까지 상당히 유사하게 작성되었습니다.
 
 <figure>
- <figcaption>③ 조건을 지정한 프롬프트 — 일반 대화창에서 실행한 결과</figcaption>
+ <figcaption><strong>③ 조건을 지정한 프롬프트 — 일반 대화창에서 실행한 결과</strong></figcaption>
  <img src="https://github.com/HelloDataScience/images/blob/main/Jeju_Travel_Plan_3.png?raw=true" alt="조건을 지정한 프롬프트를 일반 대화창에서 실행한 결과">
 </figure>
 
 <figure>
- <figcaption>④ 조건을 지정한 프롬프트 — 임시 대화창에서 실행한 결과</figcaption>
+ <figcaption><strong>④ 조건을 지정한 프롬프트 — 임시 대화창에서 실행한 결과</strong></figcaption>
  <img src="https://github.com/HelloDataScience/images/blob/main/Jeju_Travel_Plan_4.png?raw=true" alt="조건을 지정한 프롬프트를 임시 대화창에서 실행한 결과">
 </figure>
 
