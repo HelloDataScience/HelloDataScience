@@ -35,6 +35,13 @@ author_profile: true
      테두리가 맞물리는 버튼 그룹 모양은 그대로 유지된다.
      폭이 좁은 화면에서 버튼이 넘칠 수 있어 wrap을 함께 준다. */
   #home-pagination ul { display: flex; flex-wrap: wrap; justify-content: center; }
+
+  /* 테마는 글 제목 h2에 margin-top: 2em을 준다. 항목 사이 간격으로는 맞지만,
+     목록 맨 위 항목에서는 그 여백이 부모를 뚫고 나가(margin collapsing) 목록
+     전체를 아래로 밀어 왼쪽 프로필과 높이가 어긋난다. 그래서 첫 항목만 0으로 둔다.
+     :first-child가 아니라 클래스를 쓰는 이유: 2·3페이지에서는 DOM상 첫 자식이
+     아니라 "처음으로 보이는" 항목이 맨 위에 오므로, 스크립트가 매번 붙여준다. */
+  #home-entries .list__item.is-first .archive__item-title { margin-top: 0; }
 </style>
 
 {%- assign locale = site.locale -%}
@@ -113,8 +120,11 @@ author_profile: true
     var page = currentPage();
     var start = (page - 1) * PAGE_SIZE;
     items.forEach(function (el, i) {
+      var shown = (i >= start && i < start + PAGE_SIZE);
       // hidden 속성 대신 style을 쓴다 — 테마 CSS의 display 규칙이 [hidden]을 덮을 수 있다.
-      el.style.display = (i >= start && i < start + PAGE_SIZE) ? '' : 'none';
+      el.style.display = shown ? '' : 'none';
+      // 맨 위에 오는 항목만 제목의 위쪽 여백을 없앤다(위 style 참고).
+      el.classList.toggle('is-first', i === start);
     });
 
     var ul = document.createElement('ul');
