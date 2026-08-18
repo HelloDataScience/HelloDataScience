@@ -1,0 +1,17 @@
+# 이 파일이 없으면 jekyll-sitemap이 Sitemap 한 줄짜리 robots.txt를 자동 생성한다.
+# 직접 두는 순간 자동 생성이 꺼지므로, 아래 Sitemap 줄을 절대 지우지 말 것.
+
+# /sports/(오늘의 경기)는 외부 API 데이터만 표시하는 화면이라 발행자 콘텐츠가 없다.
+# AdSense 심사에서 "가치가 별로 없는 콘텐츠"로 잡힐 소지가 있어 AdSense 크롤러에만 막는다.
+#
+# 모든 크롤러에 Disallow를 걸지 않는 이유: 이 페이지가 색인에서 빠져 있는 근거는
+# 페이지 안의 <meta name="robots" content="noindex, nofollow">인데, robots.txt로
+# 막으면 Googlebot이 그 태그 자체를 못 읽어서 오히려 색인 상태가 불안정해진다.
+# 크롤링은 열어두고 noindex로 색인을 막는 편이 맞다.
+User-agent: Mediapartners-Google
+Disallow: /sports/
+
+User-agent: *
+Allow: /
+
+Sitemap: https://www.hds.ai.kr/sitemap.xml
