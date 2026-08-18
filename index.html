@@ -33,7 +33,29 @@ author_profile: true
 
 <p>2018~2021년에 작성한 R·Python 강의 노트입니다. 카테고리별로 정리된 목록은 <a href="{{ '/archive/' | relative_url }}">아카이브</a>에서 보실 수 있습니다.</p>
 
-{%- assign archive_all = site.archive_r | concat: site.archive_py | sort: "date" | reverse -%}
+{%- comment -%}
+  날짜 내림차순으로 정렬하되, 같은 날짜에서는 URL을 2차 기준으로 쓴다.
+  Liquid의 sort는 키가 같을 때 순서를 보장하지 않아서, 그냥 `sort: "date"`만
+  쓰면 같은 날 올린 글들의 회차 순서가 뒤섞인다(machine-learning-overview 3편이
+  모두 2018-05-31, r-basics-1·2가 모두 2018-01-02, python 2편이 모두 2021-10-18).
+
+  그래서 "YYYYMMDD|URL" 문자열을 만들어 정렬한 뒤 URL로 원본 문서를 다시 찾는다.
+  내림차순이므로 같은 날짜 안에서는 URL 역순 = 회차 역순이 된다.
+
+  주의: URL 비교는 사전순이라 회차가 10을 넘으면 -10이 -2보다 앞에 온다.
+  현재 최대 회차는 5라 문제없지만, 그때가 되면 회차를 0으로 채우거나
+  날짜를 서로 다르게 주는 방식으로 바꿔야 한다.
+{%- endcomment -%}
+
+{%- assign archive_docs = site.archive_r | concat: site.archive_py -%}
+{%- capture archive_keys -%}{%- for doc in archive_docs -%}{{ doc.date | date: "%Y%m%d" }}|{{ doc.url }},{%- endfor -%}{%- endcapture -%}
+{%- assign archive_keys = archive_keys | split: "," | sort | reverse -%}
+{%- assign archive_all = "" | split: "" -%}
+{%- for key in archive_keys -%}
+  {%- assign key_parts = key | split: "|" -%}
+  {%- assign matched = archive_docs | where: "url", key_parts[1] -%}
+  {%- assign archive_all = archive_all | concat: matched -%}
+{%- endfor -%}
 <div class="entries-list">
   {% include documents-collection.html locale=locale entries=archive_all type='list' %}
 </div>
