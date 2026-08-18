@@ -3,15 +3,15 @@ title: "생성형 AI와 대화하며 프롬프트를 다듬는 법"
 subtitle: "완벽한 프롬프트 대신, 단계별 요청과 나만의 GPT"
 date: 2026-08-07
 categories:
-  - 생성형AI
+ - 생성형AI
 tags:
-  - 생성형AI
-  - 프롬프트엔지니어링
-  - 데이터분석입문
-  - ChatGPT
+ - 생성형AI
+ - 프롬프트엔지니어링
+ - 데이터분석입문
+ - ChatGPT
 excerpt: "완벽한 프롬프트를 한 번에 쓰려고 하지 마세요. 짧게 시작해서 대화로 다듬어가는 게 더 빠르고 정확합니다. 반복되는 조건을 매번 입력하지 않도록 시스템 프롬프트와 맞춤형 GPT를 만드는 법까지 실습으로 안내합니다."
 sidebar:
-  nav: "genai"
+ nav: "genai"
 ---
 
 이 글은 「생성형 AI로 시작하는 데이터 분석」 9회 연재 중 **6회**입니다. [전체 목차 보기](/genai-series/)
@@ -26,13 +26,13 @@ sidebar:
 먼저 제가 강의 중에 소개하는 강의안에서, 같은 계정과 같은 모델로 "제주도 여행 계획을 세워줘"라는 프롬프트를 실행하여 받은 답변을 캡처해놓은 두 개의 이미지를 보여드리겠습니다. 5회차에서 나쁜 프롬프트의 예로 들었던, 지시 하나만 있고 나머지 여덟 가지 요소는 전부 빠진 바로 그 프롬프트입니다. 한 번은 평소 쓰던 일반 대화창에서 실행했고, 한 번은 이전 대화나 메모리의 영향을 받지 않는 임시 대화창에서 실행했습니다.
 
 <figure>
-  <figcaption>① 조건이 부족한 프롬프트 — 일반 대화창에서 실행한 결과</figcaption>
-  <img src="https://github.com/HelloDataScience/images/blob/main/Jeju_Travel_Plan_1.png?raw=true" alt="조건이 부족한 프롬프트를 일반 대화창에서 실행한 결과">
+ <figcaption>① 조건이 부족한 프롬프트 — 일반 대화창에서 실행한 결과</figcaption>
+ <img src="https://github.com/HelloDataScience/images/blob/main/Jeju_Travel_Plan_1.png?raw=true" alt="조건이 부족한 프롬프트를 일반 대화창에서 실행한 결과">
 </figure>
 
 <figure>
-  <figcaption>② 조건이 부족한 프롬프트 — 임시 대화창에서 실행한 결과</figcaption>
-  <img src="https://github.com/HelloDataScience/images/blob/main/Jeju_Travel_Plan_2.png?raw=true" alt="조건이 부족한 프롬프트를 임시 대화창에서 실행한 결과">
+ <figcaption>② 조건이 부족한 프롬프트 — 임시 대화창에서 실행한 결과</figcaption>
+ <img src="https://github.com/HelloDataScience/images/blob/main/Jeju_Travel_Plan_2.png?raw=true" alt="조건이 부족한 프롬프트를 임시 대화창에서 실행한 결과">
 </figure>
 
 예상하시는 것처럼 두 답변이 많이 다릅니다. 일정표의 제목과 출력 형식이 완전히 다르다는 것을 쉽게 확인할 수 있을 겁니다. 그런데 더 눈여겨보실 대목이 있습니다. 저는 여행 기간을 한 번도 말한 적이 없는데, 두 답변 모두 3박 4일 일정을 짜놓고는 "정보가 없어서 3박 4일 기준으로 잡았다"고 스스로 밝히고 있습니다. 5회차에서 조건이 빠지면 "일정을 3박 4일로 잡는다든가, 일정표 형식이 매번 달라진다든가" 하는 일이 생긴다고 말씀드렸는데, 그 두 가지가 한 화면에 그대로 나타난 셈이죠.
@@ -44,13 +44,13 @@ sidebar:
 반대로 조건을 명확하게 지정하면 어떨까요? 아래 두 이미지는 5회차 마지막에 보여드렸던 '좋은 프롬프트', 즉 도착 시각과 숙소 위치, 선호하는 여행 스타일, 원하는 출력 형식까지 9가지 요소를 모두 담은 프롬프트를 앞서와 똑같이 두 대화창에서 실행한 결과입니다. 사용자가 요구한 기준과 형식에 딱 맞춰 답변이 나왔고, 서로 다른 대화창에서 실행했는데도 제목("제주도 2박 3일 효도 여행 일정표")부터 표의 열 구성까지 상당히 유사하게 작성되었습니다.
 
 <figure>
-  <figcaption>③ 조건을 지정한 프롬프트 — 일반 대화창에서 실행한 결과</figcaption>
-  <img src="https://github.com/HelloDataScience/images/blob/main/Jeju_Travel_Plan_3.png?raw=true" alt="조건을 지정한 프롬프트를 일반 대화창에서 실행한 결과">
+ <figcaption>③ 조건을 지정한 프롬프트 — 일반 대화창에서 실행한 결과</figcaption>
+ <img src="https://github.com/HelloDataScience/images/blob/main/Jeju_Travel_Plan_3.png?raw=true" alt="조건을 지정한 프롬프트를 일반 대화창에서 실행한 결과">
 </figure>
 
 <figure>
-  <figcaption>④ 조건을 지정한 프롬프트 — 임시 대화창에서 실행한 결과</figcaption>
-  <img src="https://github.com/HelloDataScience/images/blob/main/Jeju_Travel_Plan_4.png?raw=true" alt="조건을 지정한 프롬프트를 임시 대화창에서 실행한 결과">
+ <figcaption>④ 조건을 지정한 프롬프트 — 임시 대화창에서 실행한 결과</figcaption>
+ <img src="https://github.com/HelloDataScience/images/blob/main/Jeju_Travel_Plan_4.png?raw=true" alt="조건을 지정한 프롬프트를 임시 대화창에서 실행한 결과">
 </figure>
 
 ## 좋은 프롬프트는 훈련으로 만들어집니다
@@ -71,9 +71,9 @@ sidebar:
 
 |<center>방법</center>|<center>내용</center>|<center>참고</center>|
 |---|---|---|
-| 생성형 AI에게 초안 맡기기 | 하고 싶은 작업을 짧게 설명하고, 프롬프트 초안 작성을 요청 | 가장 빠르지만, 초안을 그대로 쓰지 말고<br>업무 기준에 맞게 수정해야 함 |
-| 이전 대화를 정리시키기 | 짧은 요청으로 시작하여 답변을 보고 대화를 통해 개선해나가고,<br>최종 합의된 내용을 프롬프트로 정리할 것을 생성형 AI에게 요청 | 실제 업무에서는 이 방법이 가장 자연스러움 |
-| 공개된 예시 참고하기 | 공개된 프롬프트 예시를 가져와 내 상황에 맞게 수정 | 공개된 프롬프트에는 내 의도와 안 맞는 조건이<br>섞여 있을 수 있음 (참고: [prompts.chat](https://prompts.chat)) |
+| 생성형 AI에게 초안 맡기기 | 하고 싶은 작업을 짧게 설명하고, 프롬프트 초안 작성을 요청 | 가장 빠르지만, 초안을 그대로 쓰지 말고 업무 기준에 맞게 수정해야 함 |
+| 이전 대화를 정리시키기 | 짧은 요청으로 시작하여 답변을 보고 대화를 통해 개선해나가고, 최종 합의된 내용을 프롬프트로 정리할 것을 생성형 AI에게 요청 | 실제 업무에서는 이 방법이 가장 자연스러움 |
+| 공개된 예시 참고하기 | 공개된 프롬프트 예시를 가져와 내 상황에 맞게 수정 | 공개된 프롬프트에는 내 의도와 안 맞는 조건이 섞여 있을 수 있음 (참고: [prompts.chat](https://prompts.chat)) |
 | 템플릿 채우기 | 정해진 템플릿의 골격에 내 상황을 끼워 넣은 뒤 요청 | 반복 업무에는 템플릿 방식이 가장 안정적 |
 
 ## 핵심은 "단계별 요청"입니다
@@ -87,8 +87,8 @@ sidebar:
 여기서부터는 실습입니다. `customer_churn.csv`라는 더미 고객 이탈 데이터로 단계별 요청을 직접 연습해보겠습니다.
 
 <figure>
-  <figcaption>customer_churn.csv의 처음 10개 행</figcaption>
-  <img src="https://github.com/HelloDataScience/images/blob/main/customer_churn_head.png?raw=true" alt="customer_churn.csv 파일의 처음 10개 행">
+ <figcaption>customer_churn.csv의 처음 10개 행</figcaption>
+ <img src="https://github.com/HelloDataScience/images/blob/main/customer_churn_head.png?raw=true" alt="customer_churn.csv 파일의 처음 10개 행">
 </figure>
 
 [customer_churn.csv 다운로드](https://raw.githubusercontent.com/HelloDataScience/python-using-gpt/main/customer_churn.csv)
@@ -101,11 +101,11 @@ sidebar:
 
 |<center>단계</center>|<center>실습 내용</center>|<center>프롬프트</center>|
 |---|---|---|
-| 1단계 | 짧은 지시로 시작 | 첨부한 데이터로 월별 고객 이탈률을 확인하는 Python 코드를 작성해줘. [지시]<br>(customer_churn.csv 파일을 생성형 AI에게 첨부합니다.) |
-| 2단계 | 출력 형식·코딩 스타일 추가 | 답변은 Jupyter Notebook 셀 단위로, 마크다운 형식으로 작성해줘. [출력 형식]<br>코드는 PEP8 스타일로 작성하고, 코드 위에 자세한 주석을 추가해줘. [제약 조건] |
-| 3단계 | 배경·분석 범위 추가 | 1단계 결과를 보니 최근 3개월간 이탈률이 크게 늘었네. [배경]<br>연령대와 가입채널별 이탈률을 계산하는 Python 코드를 작성해줘. [지시]<br>연령대는 10세 단위로 구간을 나누고, 출력 형식을 준수해야 해. [제약 조건] |
-| 4단계 | 분석 범위 좁히기 | 이탈률이 가장 높은 집단의 특징을 확인하는 Python 코드를 작성해줘. [지시]<br>이전 대화와 중복되는 코드는 제외하고, 출력 형식을 준수해야 해. [제약 조건] |
-| 5단계 | 결과 검토·수정 | 방금 받은 코드를 실행했더니 에러가 발생했어. 에러 메시지를 그대로 붙여줄 테니,<br>원인을 알려주고 해당 셀만 고쳐줘. [지시·제약 조건] |
+| 1단계 | 짧은 지시로 시작 | 첨부한 데이터로 월별 고객 이탈률을 확인하는 Python 코드를 작성해줘. [지시] (customer_churn.csv 파일을 생성형 AI에게 첨부합니다.) |
+| 2단계 | 출력 형식·코딩 스타일 추가 | 답변은 Jupyter Notebook 셀 단위로, 마크다운 형식으로 작성해줘. [출력 형식] 코드는 PEP8 스타일로 작성하고, 코드 위에 자세한 주석을 추가해줘. [제약 조건] |
+| 3단계 | 배경·분석 범위 추가 | 1단계 결과를 보니 최근 3개월간 이탈률이 크게 늘었네. [배경] 연령대와 가입채널별 이탈률을 계산하는 Python 코드를 작성해줘. [지시] 연령대는 10세 단위로 구간을 나누고, 출력 형식을 준수해야 해. [제약 조건] |
+| 4단계 | 분석 범위 좁히기 | 이탈률이 가장 높은 집단의 특징을 확인하는 Python 코드를 작성해줘. [지시] 이전 대화와 중복되는 코드는 제외하고, 출력 형식을 준수해야 해. [제약 조건] |
+| 5단계 | 결과 검토·수정 | 방금 받은 코드를 실행했더니 에러가 발생했어. 에러 메시지를 그대로 붙여줄 테니, 원인을 알려주고 해당 셀만 고쳐줘. [지시·제약 조건] |
 
 1단계는 정말 짧은 지시 하나뿐이었는데, 단계를 진행하면서 출력 형식, 배경, 제약 조건을 하나씩 더해갑니다. 각 프롬프트 뒤에 붙여둔 대괄호가 5회차에서 살펴본 9가지 요소 중 무엇이 추가되었는지를 나타냅니다.
 
@@ -121,8 +121,8 @@ sidebar:
 
 |<center>구분</center>|<center>해당하는 요소</center>|<center>이유</center>|
 |---|---|---|
-| 시스템 프롬프트에 고정 | 출력 형식, 예시, 제약 조건,<br>어조·문체, 답변 분량, 역할 | 데이터 분석 프로젝트가 바뀌어도 크게 달라지지 않습니다.<br>한 번 정해두면 새 대화를 열어도 같은 스타일의 답변을 받습니다. |
-| 대화창에 매번 입력 | 지시, 목적, 배경 | 이번에 무엇을, 왜, 어떤 상황에서 하는지는 작업마다 달라집니다.<br>분석 목적, 데이터 설명, 이번 작업 내용이 여기에 해당합니다. |
+| 시스템 프롬프트에 고정 | 출력 형식, 예시, 제약 조건, 어조·문체, 답변 분량, 역할 | 데이터 분석 프로젝트가 바뀌어도 크게 달라지지 않습니다. 한 번 정해두면 새 대화를 열어도 같은 스타일의 답변을 받습니다. |
+| 대화창에 매번 입력 | 지시, 목적, 배경 | 이번에 무엇을, 왜, 어떤 상황에서 하는지는 작업마다 달라집니다. 분석 목적, 데이터 설명, 이번 작업 내용이 여기에 해당합니다. |
 
 여기서 '예시'는 원하는 결과물의 견본을 뜻합니다. 표의 열 이름이나 코드 작성 방식처럼 매번 같은 형태를 원한다면 시스템 프롬프트에 넣어두시고, 이번 데이터에만 해당하는 견본이라면 대화창에서 그때그때 주시면 됩니다.
 
@@ -134,8 +134,8 @@ ChatGPT에서는 이 시스템 프롬프트 개념을 '맞춤형 GPT'라는 기�
 
 |<center>구분</center>|<center>상세 내용</center>|
 |---|---|
-| HelloDataScience \| Data Analysis Planner | 데이터 파일을 첨부하면 참고 자료를 바탕으로 도메인별 데이터 분석 프로세스를 반영해, 분석 방향을<br>자연어 프롬프트로 제시합니다. '무엇을, 어떻게 분석할지'를 잡아주는 역할입니다. [바로가기](https://hds.ai.kr/gpt-data-analysis-planner) |
-| HelloDataScience \| Python Code Assistant | 자연어 프롬프트를 입력받아, Jupyter Notebook 셀 단위, 마크다운 형식으로 코드를 작성합니다.<br>출력 형식을 지침에 고정했기 때문에, 대화창에 출력 형식을 매번 추가하지 않아도 됩니다. [바로가기](https://hds.ai.kr/gpt-python-code-assistant) |
+| HelloDataScience \| Data Analysis Planner | 데이터 파일을 첨부하면 참고 자료를 바탕으로 도메인별 데이터 분석 프로세스를 반영해, 분석 방향을 자연어 프롬프트로 제시합니다. '무엇을, 어떻게 분석할지'를 잡아주는 역할입니다. [바로가기](https://hds.ai.kr/gpt-data-analysis-planner) |
+| HelloDataScience \| Python Code Assistant | 자연어 프롬프트를 입력받아, Jupyter Notebook 셀 단위, 마크다운 형식으로 코드를 작성합니다. 출력 형식을 지침에 고정했기 때문에, 대화창에 출력 형식을 매번 추가하지 않아도 됩니다. [바로가기](https://hds.ai.kr/gpt-python-code-assistant) |
 
 이렇게 역할을 두 개로 나누면, 생성형 AI를 더욱 안정적으로 사용할 수 있습니다. 다음 8회차와 9회차에서는 이 두 GPT를 실제로 사용해서, 분석 데이터를 첨부하고 결과를 얻는 전체 과정을 함께 실습해보겠습니다.
 
