@@ -41,8 +41,6 @@ author_profile: true
   {%- assign all_entries = all_entries | concat: matched -%}
 {%- endfor -%}
 
-<h3 class="archive__subtitle">전체 글</h3>
-
 <div class="entries-list" id="home-entries">
   {% include documents-collection.html locale=locale entries=all_entries type='list' %}
 </div>
