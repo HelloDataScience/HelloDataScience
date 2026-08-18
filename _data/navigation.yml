@@ -48,10 +48,13 @@ genai:
         url: /posts/genai-data-analysis-for-beginners-6/
       - title: "7회 — Python·Colab 첫걸음"
         url: /posts/genai-data-analysis-for-beginners-7/
-      - title: "8회 — 고객 이탈 데이터 실습"
-        url: /posts/genai-data-analysis-for-beginners-8/
-      - title: "9회 — 반도체 품질 데이터 실습"
-        url: /posts/genai-data-analysis-for-beginners-9/
+      # 8·9회는 아직 발행 전(글의 date가 미래라 Jekyll이 빌드하지 않습니다).
+      # 링크를 살려두면 사이드바에서 눌렀을 때 404가 나므로, 실제로 발행할 때
+      # 아래 두 줄의 주석을 풀어주세요. 연재 목차 페이지에는 '준비 중'으로 안내돼 있습니다.
+      # - title: "8회 — 고객 이탈 데이터 실습"
+      #   url: /posts/genai-data-analysis-for-beginners-8/
+      # - title: "9회 — 반도체 품질 데이터 실습"
+      #   url: /posts/genai-data-analysis-for-beginners-9/
 
 # Today's Sports는 데이터 분석 블로그 주제와 무관하고 AdSense 심사(발행자 콘텐츠
 # 없는 화면) 리스크가 있어 상단 메뉴에서 제외했다. 페이지 자체는 /sports/에 남아있고
