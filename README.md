@@ -8,9 +8,10 @@
 
 | 저장소 | 내용 |
 |:---|:---|
+| [retail-stat-ml](https://github.com/HelloDataScience/retail-stat-ml) | 대형마트 데이터로 배우는 통계 분석과 머신러닝: 기술통계, 가설검정, A/B 테스트, 회귀분석, 의사결정나무, 랜덤 포레스트 |
 | [python-data-prep](https://github.com/HelloDataScience/python-data-prep) | 파이썬 데이터 수집과 전처리: 웹 스크레이핑, Open API, Selenium, 정형·텍스트 데이터 전처리 |
 | [stock-data-analysis](https://github.com/HelloDataScience/stock-data-analysis) | 파이썬을 활용한 주식 데이터 분석: 주가 수집과 전처리, 수익률·변동성 계산과 시각화 |
-| [python-using-gpt](https://github.com/HelloDataScience/python-using-gpt) | Python using GPT 강의 실습 노트북과 데이터 |
+| [python-using-gpt](https://github.com/HelloDataScience/python-using-gpt) | 생성형 AI(GPT)를 활용한 파이썬 데이터 분석: 고객 이탈, 품질 검사 실습 데이터와 보고서 템플릿 |
 | [korea-tech](https://github.com/HelloDataScience/korea-tech) | 한국기술교육대학교 R 데이터 분석 강의 자료 |
 | [datasets](https://github.com/HelloDataScience/datasets) | R·Python 강의에서 사용하는 실습 데이터 |
 
@@ -43,6 +44,10 @@ plot.box_group(data=iris, x='species', y='petal_length')
 ```
 
 함수 목록과 자세한 사용법은 [hds 저장소](https://github.com/HelloDataScience/hds)에 정리해 두었습니다.
+
+### 📊 예제 앱
+
+- [**dashboard**](https://github.com/HelloDataScience/dashboard) — Streamlit과 Plotly로 만든 데이터 탐색 대시보드입니다. CSV를 올리면 조건 필터, 산점도, 상관 히트맵을 바로 볼 수 있습니다.
 
 ### 📖 저서
 
